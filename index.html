@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
+    <title>HTML 5 Whiteboard</title>
+    <link rel="stylesheet" type="text/css" href="reset.css" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+	<script src="js/libs/jquery-1.4.2.min.js" type="application/javascript"></script>
+	<script src="js/libs/jquery-ui-1.8.custom.min.js" type="application/javascript"></script>
+	<script src="js/libs/console.js" type="application/javascript"></script>
+	<script src="js/libs/base64.js" type="application/javascript"></script>
+	<script src="js/libs/canvas2image.js" type="application/javascript"></script>
+	<script src="js/whiteboard.js" type="application/javascript"></script>
+	<script src="js/whiteboardui.jquery.js" type="application/javascript"></script>
+<script type="text/javascript">//<![CDATA[
+// Init the script after document ready
+$(document).ready(function(){
+	WhiteboardUi.init($("#canvas"));
+});
+//]]></script>
+</head>
+<body>
+<div id="container">
+    <div id="tools">
+        <button id="button_pencil" type="button" id="drawpolyline">pencil</button>
+        <input id="input_color" type="text" name="color" size="7" value="#000000" maxlength="7" />
+        <button id="button_color" type="button">choose color</button>
+        <button id="button_eraser" type="button">eraser</button>
+	    <div>
+	    	<button id="button_shape" type="button">shape</button>
+	    	<div id="shape_menu">
+	    		<button id="button_rectangle" type="button">rectagle</button>
+	    		<button id="button_oval" type="button">oval</button>
+	    	</div>
+	    </div>
+        <button id="button_zoom" type="button">Zoom</button>
+        <button id="button_rotate" type="button">rotate</button>
+        <input id="input_rotation" type="text" name="rotation" size="3" value="90" maxlength="3" />
+        <span>degrees</span>
+        <button id="button_animate" type="button">animate</button>
+        <button id="button_undo" type="button" onmousedown="Whiteboard.undo()">undo</button>
+    	<div>
+	    	<button id="button_saveas" type="button">save as</button>
+	    	<div id="saveas_menu">
+	    		<button id="button_savepng" type="button">png</button>
+	    		<button id="button_savejpeg" type="button">jpeg</button>
+	    		<button id="button_savebmp" type="button">bmp</button>
+	    	</div>
+	    </div>
+    </div> <!-- /tools -->
+	<div id="drawsection">
+	    <div id="canvas-container">
+	        <canvas id="canvas"></canvas>
+	    </div>
+	</div><!-- /drawsection -->
+    <div id="zoom_element">
+    	<div id="zoom_amount">0%</div>
+		<div id="zoom_section">
+	    	<div id="zoom_bar"></div>
+	    	<div id="zoom_slider"></div>
+	    </div>
+	</div>
+</div> <!-- /container -->
+</body>
+</html>
+

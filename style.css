@@ -1,0 +1,110 @@
+
+#drawsection {
+	margin-top: 41px;
+	position: absolute;
+	border: 1px solid black;
+	width: 1000px;
+	left: 50%;
+	margin-left: -500px;
+	height: 90%;
+	overflow: hidden;
+}
+
+#canvas-container {
+	position: absolute;
+	height: 100%;
+	width: 100%;
+	overflow: scroll;
+}
+
+#canvas {
+	position: relative;
+	outline: 1px solid black;
+	height: 100%;
+	width: 100%;
+	z-index: 0;
+}
+
+#tools {
+	width: 1000px;
+	position: absolute;
+	left: 50%;
+	margin-left: -500px;
+	border: 1px solid black;
+	height: 40px;
+	background-color: white;
+	z-index: 10;
+}
+
+#tools > * {
+	/* This is to correctly align the 'popup' menus. */
+	float: left;
+}
+
+#tools > input {
+	display: block;
+	margin: 2px 0 0 0;
+}
+
+#shape_menu, #saveas_menu {
+	display: none;
+	position: absolute;
+	border: 1px solid;
+	width: 200px;
+	height: 100px;
+	background-color: #ffffff;
+	padding: 5px;
+}
+
+#zoom_element {
+	z-index: 100;
+	display: none;
+	position: absolute;
+	top: 25%;
+	right: 0;
+	width: 50px;
+	height: 50%;
+	border: 1px solid #cccccc;
+}
+
+#zoom_element #zoom_amount {
+	position: absolute;
+	margin-top: -21px;
+	height: 20px;
+	width: 100%;
+	text-align: center;
+	background-color: #ffffff;
+}
+
+#zoom_element #zoom_section {
+	position: absolute;
+	background-color: #ffffff;	
+	width: 50px;
+	height: 100%;
+}
+
+#zoom_element #zoom_section #zoom_bar {
+	position: absolute;
+	margin-left: 20px;
+	width: 10px;
+	height: 100%;
+	background-color: #cccccc;
+}
+
+#zoom_element #zoom_section #zoom_slider {
+	z-index: 105;
+	position: absolute;
+	margin: 0 auto;
+	bottom: 0;
+	width: 50px;
+	height: 20px;
+	background-color: #000000;
+	cursor: move;
+}
+
+
+/* Cursors */
+.pencil_active {cursor: url(img/pencil.gif), auto;}
+.eraser_active {cursor: url(img/eraser.gif), auto;}
+.rectangle_active {cursor: crosshair;}
+.oval_active {cursor: crosshair;}
