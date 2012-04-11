@@ -206,7 +206,7 @@ window.Whiteboard = {
      * the action stack by calling Whiteboard.animatenext().
      */
     animate: function() {
-      WhiteboardUi.toggleRecord();
+      WhiteboardUi.pauseRecord();
       Whiteboard.animationind = 0;
       Whiteboard.context.clearRect(0,0,Whiteboard.canvas.width,Whiteboard.canvas.height);
       Whiteboard.animatenext();

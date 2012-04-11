@@ -119,9 +119,23 @@ window.WhiteboardUi = {
   toggleRecord: function() {
     var elt = $("#recorder");
     if (elt.hasClass("not_recording")) {
+      WhiteboardUi.record();
+    } else {
+      WhiteboardUi.pauseRecord();
+    }
+  },
+
+  record: function(elt) {
+    var elt = $("#recorder");
+    if (elt.hasClass("not_recording")) {
       elt.removeClass("not_recording").addClass("is_recording").html("Pause Record");
       Whiteboard.record();
-    } else {
+    }
+  },
+
+  pauseRecord: function() {
+    var elt = $("#recorder");
+    if (elt.hasClass("is_recording")) {
       elt.removeClass("is_recording").addClass("not_recording").html("Record");
       Whiteboard.pauseRecord();
     }
@@ -197,7 +211,7 @@ window.WhiteboardUi = {
       WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endPencilDraw);
       WhiteboardUi.canvasElement.bind("mouseout", WhiteboardUi.endPencilDraw);
   },
-  
+
   /**
    * Ends pencil draw which means that mouse moving won't
    * be registered as drawing action anymore. This should be
