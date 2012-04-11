@@ -1,5 +1,5 @@
 /**
- * UI for HTML5 Canvas Whiteboard
+ * UI for HTML5 Canvas Wb
  * 
  * Authors:
  * Antti Hukkanen
@@ -14,7 +14,7 @@
 
 (function() {
   
-window.WhiteboardUi = {
+window.WbUi = {
   
   canvasElement: null, // jQuery element for canvas
   /**
@@ -24,7 +24,7 @@ window.WhiteboardUi = {
    * 
    * If names or classes have different names, they
    * should be defined in the script initialization,
-   * that is WhiteboardUi.init() function.
+   * that is WbUi.init() function.
    * 
    * The purpose of this list is only to show what
    * element definitions this scripts uses.
@@ -45,19 +45,19 @@ window.WhiteboardUi = {
   },
   
   /**
-   * Initializes the Whiteboard UI script.
+   * Initializes the Wb UI script.
    * 
    * @param canvasElement The canvas jQuery element.
    * @param elemconf The element configuration array.
    * This array can contain any of the elements defined
-   * in WhiteboardUi.elemConf. If the element names differ
+   * in WbUi.elemConf. If the element names differ
    * from the default array indexes, they should be given
    * in this array. Only the differing elements should be
    * defined.
    */
   init: function(canvasElement, elemconf) {
     this.canvasElement = canvasElement;
-    Whiteboard.init(canvasElement.attr("id"));
+    Wb.init(canvasElement.attr("id"));
     if (elemconf !== undefined) {
       for (var i in this.elementConf) {
         if (elemconf.i !== undefined) {
@@ -69,32 +69,32 @@ window.WhiteboardUi = {
   },
   
   /**
-   * Resolves the element name from WhiteboardUi.elemConf.
+   * Resolves the element name from WbUi.elemConf.
    * If index defined by ind parameter can be found in that
    * array and the array's value is returned. Otherwise
    * the ind parameter itself is returned.
    * 
-   * @param ind The element's index name in WhiteboardUi.elemConf
+   * @param ind The element's index name in WbUi.elemConf
    * @return The elements correct name
    */
   getElementName: function(ind) {
-    if (WhiteboardUi.elementConf[ind] === undefined || 
-        WhiteboardUi.elementConf[ind] === null) {
+    if (WbUi.elementConf[ind] === undefined || 
+        WbUi.elementConf[ind] === null) {
       return ind;
     }
-    return WhiteboardUi.elementConf[ind];
+    return WbUi.elementConf[ind];
   },
   
   /**
    * Resolves the jQuery element with the defined id which
-   * is resolved by WhiteboardUi.getElementName function.
+   * is resolved by WbUi.getElementName function.
    * 
-   * @param ind The element's index name in WhiteboardUi.elemConf
+   * @param ind The element's index name in WbUi.elemConf
    * or the wanted id name that's not included in that array.
    * @return The jQuery element with the resolved id
    */
   getElement: function(ind) {
-    return $('#' + WhiteboardUi.getElementName(ind));
+    return $('#' + WbUi.getElementName(ind));
   },
   
   /**
@@ -102,26 +102,26 @@ window.WhiteboardUi = {
    * and other UI elements.
    */
   addListeners: function() {
-    WhiteboardUi.getElement('button_pencil').mousedown(function() {
-      Whiteboard.setStrokeStyle(WhiteboardUi.getElement('input_color').attr("value"));
-      WhiteboardUi.activatePencil();
+    WbUi.getElement('button_pencil').mousedown(function() {
+      Wb.setStrokeStyle(WbUi.getElement('input_color').attr("value"));
+      WbUi.activatePencil();
     });
-    WhiteboardUi.getElement('button_color').mousedown(function() {
-      Whiteboard.setStrokeStyle(WhiteboardUi.getElement('input_color').attr("value"));
+    WbUi.getElement('button_color').mousedown(function() {
+      Wb.setStrokeStyle(WbUi.getElement('input_color').attr("value"));
     });
-    WhiteboardUi.getElement('button_eraser').mousedown(WhiteboardUi.activateEraser);
-    WhiteboardUi.getElement('button_animate').mousedown(Whiteboard.animate);
-    WhiteboardUi.getElement('recorder').mousedown(WhiteboardUi.toggleRecord);
-    WhiteboardUi.getElement('button_undo').mousedown(Whiteboard.undo);
+    WbUi.getElement('button_eraser').mousedown(WbUi.activateEraser);
+    WbUi.getElement('button_animate').mousedown(Wb.animate);
+    WbUi.getElement('recorder').mousedown(WbUi.toggleRecord);
+    WbUi.getElement('button_undo').mousedown(Wb.undo);
     //remove onmousedown from html and make this work
   },
   
   toggleRecord: function() {
     var elt = $("#recorder");
     if (elt.hasClass("not_recording")) {
-      WhiteboardUi.record();
+      WbUi.record();
     } else {
-      WhiteboardUi.pauseRecord();
+      WbUi.pauseRecord();
     }
   },
 
@@ -129,7 +129,7 @@ window.WhiteboardUi = {
     var elt = $("#recorder");
     if (elt.hasClass("not_recording")) {
       elt.removeClass("not_recording").addClass("is_recording").html("Pause Record");
-      Whiteboard.record();
+      Wb.record();
     }
   },
 
@@ -137,7 +137,7 @@ window.WhiteboardUi = {
     var elt = $("#recorder");
     if (elt.hasClass("is_recording")) {
       elt.removeClass("is_recording").addClass("not_recording").html("Record");
-      Whiteboard.pauseRecord();
+      Wb.pauseRecord();
     }
   },
 
@@ -151,7 +151,7 @@ window.WhiteboardUi = {
    */
   getX: function(event) {
     var cssx = (event.clientX - this.canvasElement.offset().left);
-      var xrel = Whiteboard.getRelative().width;
+      var xrel = Wb.getRelative().width;
       var canvasx = cssx * xrel;
       return canvasx;
   },
@@ -166,7 +166,7 @@ window.WhiteboardUi = {
    */
   getY: function(event) {
       var cssy = (event.clientY - this.canvasElement.offset().top);
-      var yrel = Whiteboard.getRelative().height;
+      var yrel = Wb.getRelative().height;
       var canvasy = cssy * yrel;
       return canvasy;
   },
@@ -177,9 +177,9 @@ window.WhiteboardUi = {
    * UI tools.
    */
   changeTool: function() {
-    WhiteboardUi.canvasElement.unbind();
-    WhiteboardUi.canvasElement.removeClass(WhiteboardUi.getElementName('pencil_active'));
-    WhiteboardUi.canvasElement.removeClass(WhiteboardUi.getElementName('eraser_active'));
+    WbUi.canvasElement.unbind();
+    WbUi.canvasElement.removeClass(WbUi.getElementName('pencil_active'));
+    WbUi.canvasElement.removeClass(WbUi.getElementName('eraser_active'));
   },
   
   /**
@@ -190,9 +190,9 @@ window.WhiteboardUi = {
    * this action
    */
   activatePencil: function(event) {
-    WhiteboardUi.changeTool();
-    WhiteboardUi.canvasElement.bind("mousedown", WhiteboardUi.beginPencilDraw);
-    WhiteboardUi.canvasElement.addClass(WhiteboardUi.getElementName('pencil_active'));
+    WbUi.changeTool();
+    WbUi.canvasElement.bind("mousedown", WbUi.beginPencilDraw);
+    WbUi.canvasElement.addClass(WbUi.getElementName('pencil_active'));
   },
 
   /**
@@ -204,12 +204,12 @@ window.WhiteboardUi = {
    * this action
    */
   beginPencilDraw: function(event) {
-      Whiteboard.canvasFunction("beginPencilDraw", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-      WhiteboardUi.canvasElement.bind("mousemove", function(event) {
-          Whiteboard.canvasFunction("pencilDraw", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
+      Wb.canvasFunction("beginPencilDraw", WbUi.getX(event), WbUi.getY(event));
+      WbUi.canvasElement.bind("mousemove", function(event) {
+          Wb.canvasFunction("pencilDraw", WbUi.getX(event), WbUi.getY(event));
       });
-      WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endPencilDraw);
-      WhiteboardUi.canvasElement.bind("mouseout", WhiteboardUi.endPencilDraw);
+      WbUi.canvasElement.bind("mouseup", WbUi.endPencilDraw);
+      WbUi.canvasElement.bind("mouseout", WbUi.endPencilDraw);
   },
 
   /**
@@ -221,9 +221,9 @@ window.WhiteboardUi = {
    * this action
    */
   endPencilDraw: function (event) {
-    WhiteboardUi.canvasElement.unbind("mousemove");
-    WhiteboardUi.canvasElement.unbind("mouseup");
-    WhiteboardUi.canvasElement.unbind("mouseout");
+    WbUi.canvasElement.unbind("mousemove");
+    WbUi.canvasElement.unbind("mouseup");
+    WbUi.canvasElement.unbind("mouseout");
   },
   
   /**
@@ -234,9 +234,9 @@ window.WhiteboardUi = {
    * this action
    */
   activateEraser: function(event) {
-    WhiteboardUi.changeTool();
-    WhiteboardUi.canvasElement.bind("mousedown", WhiteboardUi.beginErasing);
-    WhiteboardUi.canvasElement.addClass(WhiteboardUi.getElementName('eraser_active'));
+    WbUi.changeTool();
+    WbUi.canvasElement.bind("mousedown", WbUi.beginErasing);
+    WbUi.canvasElement.addClass(WbUi.getElementName('eraser_active'));
   },
 
   /**
@@ -248,12 +248,12 @@ window.WhiteboardUi = {
    * this action
    */
   beginErasing: function(event) {
-      Whiteboard.canvasFunction("beginErasing", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-      WhiteboardUi.canvasElement.bind("mousemove", function(event) {
-          Whiteboard.canvasFunction("erasePoint", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
+      Wb.canvasFunction("beginErasing", WbUi.getX(event), WbUi.getY(event));
+      WbUi.canvasElement.bind("mousemove", function(event) {
+          Wb.canvasFunction("erasePoint", WbUi.getX(event), WbUi.getY(event));
       });
-      WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endErasing);
-      WhiteboardUi.canvasElement.bind("mouseout", WhiteboardUi.endErasing);
+      WbUi.canvasElement.bind("mouseup", WbUi.endErasing);
+      WbUi.canvasElement.bind("mouseout", WbUi.endErasing);
   },
   
   /**
@@ -265,9 +265,9 @@ window.WhiteboardUi = {
    * this action
    */
   endErasing: function(event) {
-    WhiteboardUi.canvasElement.unbind("mousemove");
-    WhiteboardUi.canvasElement.unbind("mouseup");
-    WhiteboardUi.canvasElement.unbind("mouseout");
+    WbUi.canvasElement.unbind("mousemove");
+    WbUi.canvasElement.unbind("mouseup");
+    WbUi.canvasElement.unbind("mouseout");
   },
 };
 })();

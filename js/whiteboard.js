@@ -1,5 +1,5 @@
 /**
- * HTML5 Canvas Whiteboard
+ * HTML5 Canvas Wb
  * 
  * Authors:
  * Antti Hukkanen
@@ -52,18 +52,18 @@ function readableTime(ms) {
 function BeginPath(x, y) {
   this.coordinates = [x, y];
   this.type="beginpath";
-  this.time = Whiteboard.getRecordingTime();
+  this.time = Wb.getRecordingTime();
 }
 /* End path event */
 function ClosePath() {
   this.type = "closepath";
-  this.time = Whiteboard.getRecordingTime();
+  this.time = Wb.getRecordingTime();
 }
 /* Point draw event */
 function DrawPathToPoint(x, y) {
   this.type = "drawpathtopoint";
   this.coordinates = [x, y];
-  this.time = Whiteboard.getRecordingTime();
+  this.time = Wb.getRecordingTime();
 }
 /*Erase event */
 function Erase(x, y) {
@@ -71,13 +71,13 @@ function Erase(x, y) {
   this.coordinates = [x, y];
   this.height = 5;
   this.width = 5;
-  this.time = Whiteboard.getRecordingTime();
+  this.time = Wb.getRecordingTime();
 }
 /* Stroke style event */
 function StrokeStyle(color) {
   this.type = "strokestyle";
   this.color = color;
-  this.time = Whiteboard.getRecordingTime();
+  this.time = Wb.getRecordingTime();
 }
 /* === END Event objects === */
 
@@ -88,7 +88,7 @@ function StrokeStyle(color) {
  *    STATIC CONTROL
  * ====================   
  */
-window.Whiteboard = {
+window.Wb = {
 
     context: null,
     canvas: null,
@@ -148,7 +148,7 @@ window.Whiteboard = {
         var hei;
         var tmp;
         if(firstexecute || firstexecute === undefined) {
-            wbevent.time = Whiteboard.getRecordingTime();
+            wbevent.time = Wb.getRecordingTime();
             this.events.push(wbevent);
         }
 
@@ -175,37 +175,37 @@ window.Whiteboard = {
     },
 
     record: function(){
-      Whiteboard.recording = true;
-      Whiteboard.subtractTime += (new Date().getTime() - Whiteboard.lastEndTime);
-      Whiteboard.clockInterval = setInterval(Whiteboard.setClock, 500);
+      Wb.recording = true;
+      Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
+      Wb.clockInterval = setInterval(Wb.setClock, 500);
 
     },
 
     pauseRecord: function(){
-      Whiteboard.recording = false;
-      Whiteboard.lastEndTime = new Date().getTime();
-      clearInterval(Whiteboard.clockInterval);
+      Wb.recording = false;
+      Wb.lastEndTime = new Date().getTime();
+      clearInterval(Wb.clockInterval);
     },
 
     /* calls set clock every x milliseconds for when animating
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */
     incrementingClock: function(time){
-      Whiteboard.setClock(time);
+      Wb.setClock(time);
       time += 250;
-      Whiteboard.clockInterval = setTimeout(Whiteboard.incrementingClock, 250, time);
+      Wb.clockInterval = setTimeout(Wb.incrementingClock, 250, time);
     },
 
     /* sets the clock time */
     setClock: function(time){
       if (!time){
-        time = Whiteboard.getRecordingTime();
+        time = Wb.getRecordingTime();
       }
       $("#timer").html(readableTime(time));
     },
 
     checkRecordStatus: function(){
-      if (Whiteboard.recording){
+      if (Wb.recording){
         return true;
       } else {
         alert("You must begin recording before you start drawing");
@@ -215,8 +215,8 @@ window.Whiteboard = {
 
     /* Gets the time elapsed in recording mode, should be only called while recording*/
     getRecordingTime: function(){
-      Whiteboard.recordingTime = new Date().getTime() - Whiteboard.subtractTime;
-      return Whiteboard.recordingTime;
+      Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
+      return Wb.recordingTime;
     },
 
     /**
@@ -237,14 +237,14 @@ window.Whiteboard = {
     /**
      * Starts the animation action in the canvas. This clears
      * the whole canvas and starts to execute actions from
-     * the action stack by calling Whiteboard.animatenext().
+     * the action stack by calling Wb.animatenext().
      */
     animate: function() {
-      WhiteboardUi.pauseRecord();
-      Whiteboard.incrementingClock(0);
-      Whiteboard.animationind = 0;
-      Whiteboard.context.clearRect(0,0,Whiteboard.canvas.width,Whiteboard.canvas.height);
-      Whiteboard.animatenext();
+      WbUi.pauseRecord();
+//      Wb.incrementingClock(0);
+      Wb.animationind = 0;
+      Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
+      Wb.animatenext();
     },
 
     /**
@@ -254,20 +254,21 @@ window.Whiteboard = {
      */
     animatenext: function() {
         // why is this necessary? TODO
-        if (Whiteboard.animationind === 0) {
-          Whiteboard.execute(Whiteboard.events[0], false);
-          Whiteboard.animationind++;
+        if (Wb.animationind === 0) {
+          Wb.execute(Wb.events[0], false);
+          Wb.animationind++;
         }
-        var thisEventTime = Whiteboard.events[Whiteboard.animationind].time;
-        Whiteboard.execute(Whiteboard.events[Whiteboard.animationind], false);
+        var thisEventTime = Wb.events[Wb.animationind].time;
+        Wb.setClock(thisEventTime);
+        Wb.execute(Wb.events[Wb.animationind], false);
 
-        Whiteboard.animationind++;
+        Wb.animationind++;
 
-        if (Whiteboard.animationind < Whiteboard.events.length - 1) {
-          var dtime = Whiteboard.events[Whiteboard.animationind + 1].time - Whiteboard.events[Whiteboard.animationind].time;
-          setTimeout(Whiteboard.animatenext, dtime);
+        if (Wb.animationind < Wb.events.length - 1) {
+          var dtime = Wb.events[Wb.animationind + 1].time - Wb.events[Wb.animationind].time;
+          setTimeout(Wb.animatenext, dtime);
         } else {
-          clearTimeout(Whiteboard.clockInterval);
+          clearTimeout(Wb.clockInterval);
         }
     },
 
@@ -276,8 +277,8 @@ window.Whiteboard = {
      * recording is on first before anything gets executed
      */
     canvasFunction: function(function_name, x, y){
-      if (Whiteboard.checkRecordStatus()) {
-        executeFunctionByName(function_name, Whiteboard, x, y);
+      if (Wb.checkRecordStatus()) {
+        executeFunctionByName(function_name, Wb, x, y);
       }
     },
 
@@ -289,7 +290,7 @@ window.Whiteboard = {
      */
     beginPencilDraw: function(x, y) {
         var e = new BeginPath(x, y);
-        Whiteboard.execute(e);
+        Wb.execute(e);
     },
 
     /**
@@ -301,7 +302,7 @@ window.Whiteboard = {
      */
     pencilDraw: function(x, y) {
         var e = new DrawPathToPoint(x, y);
-        Whiteboard.execute(e);
+        Wb.execute(e);
     },
 
     /**
@@ -312,7 +313,7 @@ window.Whiteboard = {
      */
     beginErasing: function(x, y) {
         var e = new BeginPath(x, y);
-        Whiteboard.execute(e);
+        Wb.execute(e);
     },
 
     /**
@@ -327,7 +328,7 @@ window.Whiteboard = {
      */
     erasePoint: function(x, y) {
         var e = new Erase(x, y);
-        Whiteboard.execute(e);
+        Wb.execute(e);
     },
 
     /**
@@ -336,7 +337,7 @@ window.Whiteboard = {
     */
     redraw: function() {
         //this.init();
-      Whiteboard.context.clearRect(0,0,Whiteboard.canvas.width,Whiteboard.canvas.height);
+      Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
         var redrawEvents = this.events;
         this.events = [];
         
@@ -353,9 +354,9 @@ window.Whiteboard = {
        * @param color The wanted stroke color
       */
     setStrokeStyle: function(color) {
-     if (color != Whiteboard.drawColor) {
+     if (color != Wb.drawColor) {
         var e = new StrokeStyle(color);
-        Whiteboard.execute(e);
+        Wb.execute(e);
       }
     },
 
@@ -365,9 +366,9 @@ window.Whiteboard = {
      * effective then to redraw but time is limited)
     */
     undo: function() {
-        reverseEvent = Whiteboard.events.pop();
+        reverseEvent = Wb.events.pop();
         console.log(reverseEvent.type);
-        Whiteboard.redraw();
+        Wb.redraw();
     }
 
     /* === END ACTIONS === */
