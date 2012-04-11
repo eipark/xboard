@@ -16,7 +16,6 @@
   
 window.WhiteboardUi = {
   
-  zoomrel: 1,
   canvasElement: null, // jQuery element for canvas
   /**
    * The default ids and classes for the element
@@ -34,44 +33,15 @@ window.WhiteboardUi = {
     // Classes
     pencil_active:    null,
     eraser_active:    null,
-    rectangle_active: null,
-    oval_active:    null,
     
     // Element ids
     button_pencil:    null,
     button_color:   null,
     button_eraser:    null,
-    button_zoomin:    null,
-    button_zoomout:   null,
-    button_zoom:    null,
-    button_rotate:    null,
     button_animate:   null,
     button_undo:    null,
-    button_shape:   null,
-    button_rectangle: null,
-    button_oval:    null,
-    button_saveas:    null,
-    button_savepng:   null,
-    button_savejpeg:  null,
-    button_savebmp:   null,
     input_color:    null,
-    input_rotation:   null,
-    shape_menu:     null,
-    saveas_menu:    null,
-    zoom_element:   null,
-    zoom_section:   null,
-    zoom_amount:    null,
-    zoom_slider:    null,
-    zoom_bar:     null
-  },
-  /**
-   * Defines which normally hidden elements 
-   * are currently showing.
-   */
-  activeElems: {
-    shape_menu:   false,
-    saveas_menu:  false,
-    zoom:     false
+    button_record: null,
   },
   
   /**
@@ -141,9 +111,22 @@ window.WhiteboardUi = {
     });
     WhiteboardUi.getElement('button_eraser').mousedown(WhiteboardUi.activateEraser);
     WhiteboardUi.getElement('button_animate').mousedown(Whiteboard.animate);
+    WhiteboardUi.getElement('recorder').mousedown(WhiteboardUi.toggleRecord);
+    WhiteboardUi.getElement('button_undo').mousedown(Whiteboard.undo);
     //remove onmousedown from html and make this work
   },
   
+  toggleRecord: function() {
+    var elt = $("#recorder");
+    if (elt.hasClass("not_recording")) {
+      elt.removeClass("not_recording").addClass("is_recording").html("Pause Record");
+      Whiteboard.record();
+    } else {
+      elt.removeClass("is_recording").addClass("not_recording").html("Record");
+      Whiteboard.pauseRecord();
+    }
+  },
+
   /**
    * Resolves the X coordinate of the given event inside
    * the canvas element.
@@ -183,8 +166,6 @@ window.WhiteboardUi = {
     WhiteboardUi.canvasElement.unbind();
     WhiteboardUi.canvasElement.removeClass(WhiteboardUi.getElementName('pencil_active'));
     WhiteboardUi.canvasElement.removeClass(WhiteboardUi.getElementName('eraser_active'));
-    WhiteboardUi.canvasElement.removeClass(WhiteboardUi.getElementName('rectangle_active'));
-    WhiteboardUi.canvasElement.removeClass(WhiteboardUi.getElementName('oval_active'));
   },
   
   /**
@@ -209,9 +190,9 @@ window.WhiteboardUi = {
    * this action
    */
   beginPencilDraw: function(event) {
-      Whiteboard.beginPencilDraw(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
+      Whiteboard.canvasFunction("beginPencilDraw", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
       WhiteboardUi.canvasElement.bind("mousemove", function(event) {
-          Whiteboard.pencilDraw(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
+          Whiteboard.canvasFunction("pencilDraw", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
       });
       WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endPencilDraw);
       WhiteboardUi.canvasElement.bind("mouseout", WhiteboardUi.endPencilDraw);
@@ -253,9 +234,9 @@ window.WhiteboardUi = {
    * this action
    */
   beginErasing: function(event) {
-      Whiteboard.beginErasing(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
+      Whiteboard.canvasFunction("beginErasing", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
       WhiteboardUi.canvasElement.bind("mousemove", function(event) {
-          Whiteboard.erasePoint(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
+          Whiteboard.canvasFunction("erasePoint", WhiteboardUi.getX(event), WhiteboardUi.getY(event));
       });
       WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endErasing);
       WhiteboardUi.canvasElement.bind("mouseout", WhiteboardUi.endErasing);
@@ -274,241 +255,5 @@ window.WhiteboardUi = {
     WhiteboardUi.canvasElement.unbind("mouseup");
     WhiteboardUi.canvasElement.unbind("mouseout");
   },
-  
-  /**
-   * Shows or hides the zoom element depending on its
-   * current state.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  zoomBar: function(event) {
-    var zoom = WhiteboardUi.getElement('zoom_element');
-    if (WhiteboardUi.activeElems.zoom === false) {
-      WhiteboardUi.activeElems.zoom = true;
-      zoom.css('opacity', 0);
-      zoom.css('display', 'block');
-      zoom.animate({
-        opacity: 1
-      }, 150);
-      WhiteboardUi.activateZoom();
-    } else {
-      WhiteboardUi.activeElems.zoom = false;
-      zoom.animate({
-        opacity: 0
-      }, 150, function() {
-        zoom.css('display', 'none');
-      });
-    }
-  },
-  
-  /**
-   * Activates the zooming element to listen the dragging
-   * action that user performs on the zoom slider element.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  activateZoom: function() {
-    var slider = WhiteboardUi.getElement('zoom_slider');
-    var zoomSec = WhiteboardUi.getElement('zoom_section');
-    var height = zoomSec.height() - slider.height();
-    var sy = zoomSec.offset().top + zoomSec.height();
-    
-    slider.draggable({
-      axis: 'y',
-      containment: 'parent',
-      drag: function(event, ui) {
-        var amount = WhiteboardUi.getElement('zoom_amount');
-        var ey = event.clientY;
-        var px = zoomSec.height() - slider.height() - $(this).position().top;
-        var zoom = 2 * px / height;
-        WhiteboardUi.getElement('zoom_amount').html(parseInt(100 * zoom, 10) + "%");
-      },
-      stop: function(event, ui) {
-        WhiteboardUi.performZoom();
-      }
-    });
-  },
-  
-  /**
-   * Performs the zoom defined by the zoom slider.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  performZoom: function(event) {
-    var zoom = parseInt(WhiteboardUi.getElement('zoom_amount').html(), 10) / 100;
-    
-    var rel = (1 + zoom) / WhiteboardUi.zoomrel;
-    Whiteboard.zoom(rel);
-    WhiteboardUi.zoomrel = 1 + zoom;
-  },
-  
-  /**
-   * Opens or hides the shape selection menu depending
-   * on its current state.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  shapeMenu: function(event) {
-    var menu = WhiteboardUi.getElement('shape_menu');
-    if (WhiteboardUi.activeElems.shape_menu === false) {
-      WhiteboardUi.activeElems.shape_menu = true;
-      var wid = menu.css('width');
-      var hei = menu.css('height');
-      menu.css('width', '0');
-      menu.css('height', '0');
-      menu.css('display', 'block');
-      menu.animate({ 
-          width: wid,
-          height: hei
-      }, 150);
-    } else {
-      WhiteboardUi.activeElems.shape_menu = false;
-      menu.animate({ 
-          opacity: 0
-      }, 150, function() {
-        menu.css('display', 'none');
-        menu.css('opacity', '1');
-      });
-    }
-  },
-  
-  /**
-   * Activates the rectangle drawing tool.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  activateRectangle: function(event) {
-    WhiteboardUi.changeTool();
-    WhiteboardUi.canvasElement.bind("mousedown", WhiteboardUi.beginRectangle);
-    WhiteboardUi.canvasElement.addClass(WhiteboardUi.getElementName('rectangle_active'));
-  },
-  
-  /**
-   * Begins rectangle drawing at the current point. This also
-   * adds mousemove event listener to the canvas element
-   * while user keeps the mouse down. After every mousemove
-   * event the rectangle is redrawn depending on the new
-   * mouse position.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  beginRectangle: function(event) {
-    Whiteboard.beginShape(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-      WhiteboardUi.canvasElement.bind("mousemove", function(event) {
-          Whiteboard.drawRectangle(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-      });
-    WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endRectangle);
-  },
-  
-  /**
-   * Ends rectangle drawing after user releases the mouse
-   * button after starting the drawing.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  endRectangle: function(event) {
-    Whiteboard.drawRectangle(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-    WhiteboardUi.canvasElement.unbind("mousemove");
-    WhiteboardUi.canvasElement.unbind("mouseup");
-  },
-  
-  /**
-   * Activates the oval drawing tool.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  activateOval: function(event) {
-    WhiteboardUi.changeTool();
-    WhiteboardUi.canvasElement.bind("mousedown", WhiteboardUi.beginOval);
-    WhiteboardUi.canvasElement.addClass(WhiteboardUi.getElementName('oval_active'));
-  },
-  
-  /**
-   * Begins oval drawing at the current point. This also
-   * adds mousemove event listener to the canvas element
-   * while user keeps the mouse down. After every mousemove
-   * event the oval is redrawn depending on the new
-   * mouse position.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  beginOval: function(event) {
-    Whiteboard.beginShape(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-      WhiteboardUi.canvasElement.bind("mousemove", function(event) {
-          Whiteboard.drawOval(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-      });
-      WhiteboardUi.canvasElement.bind("mouseup", WhiteboardUi.endOval);
-  },
-  
-  /**
-   * Ends oval drawing after user releases the mouse
-   * button after starting the drawing.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  endOval: function(event) {
-    Whiteboard.drawOval(WhiteboardUi.getX(event), WhiteboardUi.getY(event));
-    WhiteboardUi.canvasElement.unbind("mousemove");
-    WhiteboardUi.canvasElement.unbind("mouseup");
-  },
-  
-  /**
-   * Opens or hides the save as menu depending on its
-   * current state.
-   * 
-   * @param event The event that has been executed to perform
-   * this action
-   */
-  saveasMenu: function(event) {
-    var menu = WhiteboardUi.getElement('saveas_menu');
-    if (WhiteboardUi.activeElems.saveas_menu === false) {
-      WhiteboardUi.activeElems.saveas_menu = true;
-      var wid = menu.css('width');
-      var hei = menu.css('height');
-      menu.css('width', '0');
-      menu.css('height', '0');
-      menu.css('display', 'block');
-      menu.animate({ 
-          width: wid,
-          height: hei
-      }, 150);
-    } else {
-      WhiteboardUi.activeElems.saveas_menu = false;
-      menu.animate({ 
-          opacity: 0
-      }, 150, function() {
-        menu.css('display', 'none');
-        menu.css('opacity', '1');
-      });
-    }
-  }
-  
 };
-
-
-/**
- * ======================
- *    JQUERY FUNCTIONS
- * ======================   
- */
-/**
- * JQuery functioita voi lisätä näin. Tätä funktiota voisi nyt
- * kutsua mille tahansa elementille.
- * Esim:
- * $("#canvas").funktio(arvo);
- */
-jQuery.fn.funktio = function(value) {
-  // TODO
-};
-
 })();
