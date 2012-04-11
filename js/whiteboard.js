@@ -29,6 +29,17 @@ function executeFunctionByName(functionName, context /*, args */) {
     return context[func].apply(context, args);
 }
 
+/* converts ms to MM:SS:ss format */
+function readableTime(ms) {
+  var x = ms / 1000;
+  var seconds = Math.floor(x % 60);
+  x /= 60;
+  var minutes = Math.floor(x % 60);
+  seconds = seconds >= 10 ? seconds : "0" + seconds;
+  minutes = minutes >= 10 ? minutes : "0" + minutes;
+  return minutes + ":" + seconds;
+}
+
 /**
  * =============
  *     MODEL
@@ -86,9 +97,10 @@ window.Whiteboard = {
     events: [],
     animationind: 0,
     recording: false,
-    recordTime: 0,
-    lastStartTime: 0,
+    recordingTime: 0,
     lastEndTime: 0,
+    subtractTime: 0,
+    clockInterval: null,
 
     drawColor: '#000000',
 
@@ -111,12 +123,12 @@ window.Whiteboard = {
       //initial values for the drawing context
       this.context.lineWidth = 5;
       this.context.lineCap = "round";
-      var zoomFactor = 1.0;
-  
+
       // Initialize the selected color
       var col = this.drawColor;
       this.drawColor = null;
       this.setStrokeStyle(col);
+
     },
 
 
@@ -164,11 +176,32 @@ window.Whiteboard = {
 
     record: function(){
       Whiteboard.recording = true;
-      Whiteboard.lastStartTime = new Date().getTime();
+      Whiteboard.subtractTime += (new Date().getTime() - Whiteboard.lastEndTime);
+      Whiteboard.clockInterval = setInterval(Whiteboard.setClock, 500);
+
     },
 
     pauseRecord: function(){
       Whiteboard.recording = false;
+      Whiteboard.lastEndTime = new Date().getTime();
+      clearInterval(Whiteboard.clockInterval);
+    },
+
+    /* calls set clock every x milliseconds for when animating
+       need to use this instead of getRecordingTime since events
+       don't happen in regular intervals so we need a regular clock update */
+    incrementingClock: function(time){
+      Whiteboard.setClock(time);
+      time += 250;
+      Whiteboard.clockInterval = setTimeout(Whiteboard.incrementingClock, 250, time);
+    },
+
+    /* sets the clock time */
+    setClock: function(time){
+      if (!time){
+        time = Whiteboard.getRecordingTime();
+      }
+      $("#timer").html(readableTime(time));
     },
 
     checkRecordStatus: function(){
@@ -180,11 +213,12 @@ window.Whiteboard = {
       }
     },
 
-    /* Returns the current time elapsed in recording mode */
+    /* Gets the time elapsed in recording mode, should be only called while recording*/
     getRecordingTime: function(){
-      Whiteboard.recordingTime = Whiteboard.recordingTime + (new Date().getTime() - Whiteboard.lastStartTime);
+      Whiteboard.recordingTime = new Date().getTime() - Whiteboard.subtractTime;
       return Whiteboard.recordingTime;
     },
+
     /**
      * Resolves the relative width and height of the canvas
      * element. Relative parameters can vary depending on the
@@ -207,6 +241,7 @@ window.Whiteboard = {
      */
     animate: function() {
       WhiteboardUi.pauseRecord();
+      Whiteboard.incrementingClock(0);
       Whiteboard.animationind = 0;
       Whiteboard.context.clearRect(0,0,Whiteboard.canvas.width,Whiteboard.canvas.height);
       Whiteboard.animatenext();
@@ -218,18 +253,21 @@ window.Whiteboard = {
      * current and next event before calling itself again.
      */
     animatenext: function() {
-        if(Whiteboard.animationind === 0) {
-            Whiteboard.execute(Whiteboard.events[0], false);
-            Whiteboard.animationind++;   
+        // why is this necessary? TODO
+        if (Whiteboard.animationind === 0) {
+          Whiteboard.execute(Whiteboard.events[0], false);
+          Whiteboard.animationind++;
         }
-
+        var thisEventTime = Whiteboard.events[Whiteboard.animationind].time;
         Whiteboard.execute(Whiteboard.events[Whiteboard.animationind], false);
+
         Whiteboard.animationind++;
 
         if (Whiteboard.animationind < Whiteboard.events.length - 1) {
-            var now = Whiteboard.getRecordingTime();
-          var dtime = Whiteboard.events[Whiteboard.animationind+1].time - Whiteboard.events[Whiteboard.animationind].time;
-            setTimeout(Whiteboard.animatenext, dtime);
+          var dtime = Whiteboard.events[Whiteboard.animationind + 1].time - Whiteboard.events[Whiteboard.animationind].time;
+          setTimeout(Whiteboard.animatenext, dtime);
+        } else {
+          clearTimeout(Whiteboard.clockInterval);
         }
     },
 
