@@ -192,8 +192,8 @@ window.Wb = {
        don't happen in regular intervals so we need a regular clock update */
     incrementingClock: function(time){
       Wb.setClock(time);
-      time += 250;
-      Wb.clockInterval = setTimeout(Wb.incrementingClock, 250, time);
+      time += 500;
+      Wb.clockInterval = setTimeout(Wb.incrementingClock, 500, time);
     },
 
     /* sets the clock time */
@@ -241,7 +241,7 @@ window.Wb = {
      */
     animate: function() {
       WbUi.pauseRecord();
-//      Wb.incrementingClock(0);
+      Wb.incrementingClock(0);
       Wb.animationind = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       Wb.animatenext();
@@ -258,8 +258,6 @@ window.Wb = {
           Wb.execute(Wb.events[0], false);
           Wb.animationind++;
         }
-        var thisEventTime = Wb.events[Wb.animationind].time;
-        Wb.setClock(thisEventTime);
         Wb.execute(Wb.events[Wb.animationind], false);
 
         Wb.animationind++;
