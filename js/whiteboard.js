@@ -210,6 +210,11 @@ window.Wb = {
     setClock: function(time){
       if (!time){
         time = Wb.getRecordingTime();
+      } else if (time > Wb.getRecordingTime()) {
+        // to ensure the timer keeps going if there are no events
+        // for a few seconds at the end, then clearinterval
+        time = Wb.getRecordingTime();
+        clearTimeout(Wb.clockInterval);
       }
       $("#elapsed_timer").html(readableTime(time));
       // a bit inefficient, but simple
@@ -283,7 +288,7 @@ window.Wb = {
           console.log(dtime);
           setTimeout(Wb.animatenext, dtime);
         } else {
-          clearTimeout(Wb.clockInterval);
+//          clearTimeout(Wb.clockInterval);
         }
     },
 
