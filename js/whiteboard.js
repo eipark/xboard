@@ -53,6 +53,7 @@ function BeginPath(x, y) {
   this.coordinates = [x, y];
   this.type="beginpath";
   this.time = Wb.getRecordingTime();
+  console.log("Begin path: "+this.time);
 }
 /* End path event */
 function ClosePath() {
@@ -73,11 +74,19 @@ function Erase(x, y) {
   this.width = 5;
   this.time = Wb.getRecordingTime();
 }
-/* Stroke style event */
+/* Stroke style event 
+   Don't want this to take up time, so we set it as last
+   event before recording ended. Delays should only be on
+   drawing events */
 function StrokeStyle(color) {
   this.type = "strokestyle";
   this.color = color;
-  this.time = Wb.getRecordingTime();
+  if (Wb.recording) {
+    this.time = Wb.getRecordingTime();
+  } else {
+    console.log("Stroke, not recording");
+    this.time = Wb.lastEndTime;
+  }
 }
 /* === END Event objects === */
 
@@ -148,7 +157,7 @@ window.Wb = {
         var hei;
         var tmp;
         if(firstexecute || firstexecute === undefined) {
-            wbevent.time = Wb.getRecordingTime();
+            //wbevent.time = Wb.getRecordingTime();
             this.events.push(wbevent);
         }
 
@@ -177,6 +186,7 @@ window.Wb = {
     record: function(){
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
+      console.log("record, subtractTime: "+Wb.subtractTime);
       Wb.clockInterval = setInterval(Wb.setClock, 500);
 
     },
@@ -201,7 +211,9 @@ window.Wb = {
       if (!time){
         time = Wb.getRecordingTime();
       }
-      $("#timer").html(readableTime(time));
+      $("#elapsed_timer").html(readableTime(time));
+      // a bit inefficient, but simple
+      $("#total_timer").html(readableTime(Wb.getRecordingTime()));
     },
 
     checkRecordStatus: function(){
@@ -215,7 +227,9 @@ window.Wb = {
 
     /* Gets the time elapsed in recording mode, should be only called while recording*/
     getRecordingTime: function(){
-      Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
+      if (Wb.recording) {
+        Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
+      }
       return Wb.recordingTime;
     },
 
@@ -253,17 +267,20 @@ window.Wb = {
      * current and next event before calling itself again.
      */
     animatenext: function() {
-        // why is this necessary? TODO
         if (Wb.animationind === 0) {
-          Wb.execute(Wb.events[0], false);
+          console.log("first");
+          console.log("time: " + Wb.events[0].time);
+          setTimeout(function(){
+            Wb.execute(Wb.events[0], false);
+            Wb.animationind++;
+          }, Wb.events[0].time);
+        } else {
+          Wb.execute(Wb.events[Wb.animationind], false);
           Wb.animationind++;
         }
-        Wb.execute(Wb.events[Wb.animationind], false);
-
-        Wb.animationind++;
-
         if (Wb.animationind < Wb.events.length - 1) {
           var dtime = Wb.events[Wb.animationind + 1].time - Wb.events[Wb.animationind].time;
+          console.log(dtime);
           setTimeout(Wb.animatenext, dtime);
         } else {
           clearTimeout(Wb.clockInterval);
@@ -278,6 +295,14 @@ window.Wb = {
       if (Wb.checkRecordStatus()) {
         executeFunctionByName(function_name, Wb, x, y);
       }
+    },
+
+    jsonit: function(){
+      alert(Wb.events);
+      Wb.events = JSON.stringify(Wb.events);
+      alert(Wb.events);
+      Wb.events = JSON.parse(Wb.events);
+      alert(Wb.events);
     },
 
     /**

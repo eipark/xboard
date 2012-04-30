@@ -1,4 +1,6 @@
-
+.is_recording{
+  background: red;
+}
 #drawsection {
   margin-top: 41px;
   position: absolute;
