@@ -3,42 +3,40 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/> 
     <title>HTML 5 Whiteboard</title>
-    <link rel="stylesheet" type="text/css" href="reset.css" />
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="css/reset.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.19.custom.css" />
   <script src="js/libs/jquery-1.7.2.min.js" type="application/javascript"></script>
-  <script src="js/libs/jquery-ui-1.8.custom.min.js" type="application/javascript"></script>
-<!--  <script src="js/libs/console.js" type="application/javascript"></script>-->
-  <!--<script src="js/libs/base64.js" type="application/javascript"></script>-->
-  <!--<script src="js/libs/canvas2image.js" type="application/javascript"></script>-->
+  <script src="js/libs/jquery-ui-1.8.19.custom.js" type="application/javascript"></script>
   <script src="js/whiteboard.js" type="application/javascript"></script>
   <script src="js/whiteboardui.jquery.js" type="application/javascript"></script>
-<script type="text/javascript">//<![CDATA[
-// Init the script after document ready
-$(document).ready(function(){
-  WbUi.init($("#canvas"));
-});
-//]]></script>
 </head>
 <body>
 <div id="container">
-    <div id="tools">
-        <button id="button_pencil" type="button" id="drawpolyline">pencil</button>
-        <input id="input_color" type="text" name="color" size="7" value="#000000" maxlength="7" />
-        <button id="button_color" type="button">choose color</button>
-        <button id="button_eraser" type="button">eraser</button>
-        <button id="button_animate" type="button">animate</button>
-        <button id="button_undo" type="button">undo</button>
-        <div id="recorder" class="not_recording">Record</div>
-        <div id="elapsed_timer">00:00</div>
-        <div>/</div>
-        <div id="total_timer">00:00</div>
+    <div id="top-row" class="clearfix">
+      <div id="tools">
+          <button id="button_pencil" type="button" id="drawpolyline">pencil</button>
+          <input id="input_color" type="text" name="color" size="7" value="#000000" maxlength="7" />
+          <button id="button_color" type="button">choose color</button>
+          <button id="button_eraser" type="button">eraser</button>
+          <button id="button_animate" type="button">animate</button>
+          <button id="button_undo" type="button">undo</button>
+          <div id="recorder" class="not_recording">Record</div>
+          <div id="elapsed_timer">00:00</div>
+          <div>/</div>
+          <div id="total_timer">00:00</div>
 
-    </div> <!-- /tools -->
-  <div id="drawsection">
-      <div id="canvas-container">
-          <canvas id="canvas"></canvas>
+      </div> <!-- /tools -->
+      <div id="drawsection">
+        <canvas id="canvas"></canvas>
+      </div><!-- /drawsection -->
+      <div id="transcript">
       </div>
-  </div><!-- /drawsection -->
+    </div>
+    <div id="bottom-row">
+      <div id="slider">
+      </div>
+    </div>
   </div>
 </div> <!-- /container -->
 </body>

@@ -1,0 +1,4 @@
+- forked off original project
+- proper javascript object oriented design, object literal notation, proper namespacing, separation
+- timing issues were difficult, set in timeouts. 
+- storage in json

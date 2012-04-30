@@ -12,6 +12,11 @@
  * 
  */
 
+$(document).ready(function(){
+  WbUi.init($("canvas"));
+  $("#slider").slider();
+});
+
 (function() {
   
 window.WbUi = {

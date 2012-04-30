@@ -127,8 +127,7 @@ div#bottom-row{
 .rectangle_active {cursor: crosshair;}
 .oval_active {cursor: crosshair;}
 
-/* slider */
-
+/* Slider */
 .ui-slider-handle {
-  outline: none !important;
+  outline: none;
 }
