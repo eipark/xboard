@@ -1,4 +1,22 @@
 - forked off original project
 - proper javascript object oriented design, object literal notation, proper namespacing, separation
+- describe animation
+    - difficulties in scrubbing because time does not hold state of board, it needs to be recreated, so jumping aaround means popping/adding drawing
+    - naive implementation, going back just redraws everything up to the point you want, performance should be good enough.
+
 - timing issues were difficult, set in timeouts. 
 - storage in json
+
+
+- simplest UI for adding transcript, when paused you add text. specify start/end time
+- managing all events
+- RECORDING -> update max time, disable slider
+- PLAYBACK -> disable drawing, disable buttons, update elapsed time, transcript update
+- PAUSED -> can select buttons, add transcript
+
+clicking Add Transcript 
+
+- limit to size of storage? param?
+
+
+- separation of UI and logic components between Wb and WbUI

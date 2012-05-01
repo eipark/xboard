@@ -12,7 +12,7 @@
   <script src="js/whiteboardui.jquery.js" type="application/javascript"></script>
 </head>
 <body>
-<div id="container">
+<div id="xboard-container">
     <div id="top-row" class="clearfix">
       <div id="tools">
           <button id="button_pencil" type="button" id="drawpolyline">pencil</button>
@@ -22,9 +22,6 @@
           <button id="button_animate" type="button">animate</button>
           <button id="button_undo" type="button">undo</button>
           <div id="recorder" class="not_recording">Record</div>
-          <div id="elapsed_timer">00:00</div>
-          <div>/</div>
-          <div id="total_timer">00:00</div>
 
       </div> <!-- /tools -->
       <div id="drawsection">
@@ -36,6 +33,9 @@
     <div id="bottom-row">
       <div id="slider">
       </div>
+      <span id="elapsed_timer">00:00</span>
+      /
+      <span id="total_timer">00:00</span>
     </div>
   </div>
 </div> <!-- /container -->

@@ -29,17 +29,6 @@ function executeFunctionByName(functionName, context /*, args */) {
     return context[func].apply(context, args);
 }
 
-/* converts ms to MM:SS:ss format */
-function readableTime(ms) {
-  var x = ms / 1000;
-  var seconds = Math.floor(x % 60);
-  x /= 60;
-  var minutes = Math.floor(x % 60);
-  seconds = seconds >= 10 ? seconds : "0" + seconds;
-  minutes = minutes >= 10 ? minutes : "0" + minutes;
-  return minutes + ":" + seconds;
-}
-
 /**
  * =============
  *     MODEL
@@ -187,7 +176,7 @@ window.Wb = {
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
       console.log("record, subtractTime: "+Wb.subtractTime);
-      Wb.clockInterval = setInterval(Wb.setClock, 500);
+      Wb.clockInterval = setInterval(WbUi.setClock, 500);
 
     },
 
@@ -201,25 +190,11 @@ window.Wb = {
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */
     incrementingClock: function(time){
-      Wb.setClock(time);
+      WbUi.setClock(time);
       time += 500;
       Wb.clockInterval = setTimeout(Wb.incrementingClock, 500, time);
     },
 
-    /* sets the clock time */
-    setClock: function(time){
-      if (!time){
-        time = Wb.getRecordingTime();
-      } else if (time > Wb.getRecordingTime()) {
-        // to ensure the timer keeps going if there are no events
-        // for a few seconds at the end, then clearinterval
-        time = Wb.getRecordingTime();
-        clearTimeout(Wb.clockInterval);
-      }
-      $("#elapsed_timer").html(readableTime(time));
-      // a bit inefficient, but simple
-      $("#total_timer").html(readableTime(Wb.getRecordingTime()));
-    },
 
     checkRecordStatus: function(){
       if (Wb.recording){
@@ -292,6 +267,11 @@ window.Wb = {
         }
     },
 
+    /* called when someone clicks or moves the scrubber */
+    animateJump: function(){
+
+    },
+
     /**
      * Wrapper around drawing functions, we want to make sure
      * recording is on first before anything gets executed
@@ -362,8 +342,9 @@ window.Wb = {
     /**
      * This function redraws the entire canvas 
      * according to the events in events.
+     * If a time is specified it only redraws up to that point
     */
-    redraw: function() {
+    redraw: function(time) {
         //this.init();
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
         var redrawEvents = this.events;

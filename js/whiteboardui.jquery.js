@@ -14,11 +14,21 @@
 
 $(document).ready(function(){
   WbUi.init($("canvas"));
-  $("#slider").slider();
 });
 
 (function() {
-  
+
+/* converts ms to MM:SS:ss format */
+function readableTime(ms) {
+  var x = ms / 1000;
+  var seconds = Math.floor(x % 60);
+  x /= 60;
+  var minutes = Math.floor(x % 60);
+  seconds = seconds >= 10 ? seconds : "0" + seconds;
+  minutes = minutes >= 10 ? minutes : "0" + minutes;
+  return minutes + ":" + seconds;
+}
+
 window.WbUi = {
   
   canvasElement: null, // jQuery element for canvas
@@ -62,6 +72,7 @@ window.WbUi = {
    */
   init: function(canvasElement, elemconf) {
     this.canvasElement = canvasElement;
+    $("#xboard-container #slider").slider({animate: "fast"});
     Wb.init(canvasElement.attr("id"));
     if (elemconf !== undefined) {
       for (var i in this.elementConf) {
@@ -119,6 +130,13 @@ window.WbUi = {
     WbUi.getElement('recorder').mousedown(WbUi.toggleRecord);
     WbUi.getElement('button_undo').mousedown(Wb.undo);
     //remove onmousedown from html and make this work
+
+    $("#xboard-container #slider").slider({
+      slide: function(event, ui) {
+        
+      }
+    });
+
   },
   
   toggleRecord: function() {
@@ -273,6 +291,30 @@ window.WbUi = {
     WbUi.canvasElement.unbind("mousemove");
     WbUi.canvasElement.unbind("mouseup");
     WbUi.canvasElement.unbind("mouseout");
+  },
+
+  /* sets the clock time */
+  setClock: function(time){
+    if (!time){
+      time = Wb.getRecordingTime();
+      $("#xboard-container #slider").slider("option", "max", time);
+    } else if (time > Wb.getRecordingTime()) {
+      // to ensure the timer keeps going if there are no events
+      // for a few seconds at the end, then clearinterval
+      time = Wb.getRecordingTime();
+      clearTimeout(Wb.clockInterval);
+    }
+    // set clocks in UI, elapsed/total
+    $("#elapsed_timer").html(readableTime(time));
+    $("#total_timer").html(readableTime(Wb.getRecordingTime()));
+
+    // set slider
+    $("#xboard-container #slider").slider("option", "value", time);
+  },
+
+  disableSlider: function(){
+    
+
   },
 };
 })();
