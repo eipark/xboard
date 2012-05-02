@@ -20,3 +20,23 @@ clicking Add Transcript
 
 
 - separation of UI and logic components between Wb and WbUI
+
+
+
+- notion of playing/pausing playback, save state of playback.
+- update clock when you scrub.
+
+
+how timing works
+- RECORDING: clockInterval set for setClock, every 500ms. in setClock, getRecordingTime() is called, which updates every 500ms, so it keeps going even if events stop
+- PLAYBACK: incrementing clock updates every 500ms, stopped when it exceeds recordingtime... update clock timers when you click DURING playback.
+
+
+
+
+
+
+
+IMPROVEMENTS
+
+- something like backbone.js

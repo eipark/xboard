@@ -20,13 +20,13 @@
  * =============
  */
 function executeFunctionByName(functionName, context /*, args */) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    var namespaces = functionName.split(".");
-    var func = namespaces.pop();
-    for (var i = 0; i < namespaces.length; i++) {
-        context = context[namespaces[i]];
-    }
-    return context[func].apply(context, args);
+  var args = Array.prototype.slice.call(arguments, 2);
+  var namespaces = functionName.split(".");
+  var func = namespaces.pop();
+  for (var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+  }
+  return context[func].apply(context, args);
 }
 
 /**
@@ -98,8 +98,7 @@ window.Wb = {
     recordingTime: 0,
     lastEndTime: 0,
     subtractTime: 0,
-    clockInterval: null,
-
+    clockInterval: null, // used for both playback and recording interval/timeout
     drawColor: '#000000',
 
     /**
@@ -141,34 +140,34 @@ window.Wb = {
      * This object should be one of the model's event objects.
      */
     execute: function(wbevent, firstexecute) {
-        var type = wbevent.type;
-        var wid;
-        var hei;
-        var tmp;
-        if(firstexecute || firstexecute === undefined) {
-            //wbevent.time = Wb.getRecordingTime();
-            this.events.push(wbevent);
-        }
+      var type = wbevent.type;
+      var wid;
+      var hei;
+      var tmp;
+      if(firstexecute || firstexecute === undefined) {
+          //wbevent.time = Wb.getRecordingTime();
+          this.events.push(wbevent);
+      }
 
-        if(type === "beginpath") {
-            this.context.beginPath();
-            this.context.moveTo(wbevent.coordinates[0],
-                           wbevent.coordinates[1]);
-            this.context.stroke();
-        } else if (type === "drawpathtopoint") {
-            this.context.lineTo(wbevent.coordinates[0],
-                           wbevent.coordinates[1]);
-            this.context.stroke();
-        } else if (type === "closepath") {
-            this.context.closePath();
-        } else if(type === "strokestyle") {
-            this.context.strokeStyle = wbevent.color;
-        } else if (type === "erase") {
-            this.context.clearRect(wbevent.coordinates[0],
-                              wbevent.coordinates[1],
-                              wbevent.width,
-                              wbevent.height);
-        }
+      if(type === "beginpath") {
+          this.context.beginPath();
+          this.context.moveTo(wbevent.coordinates[0],
+                         wbevent.coordinates[1]);
+          this.context.stroke();
+      } else if (type === "drawpathtopoint") {
+          this.context.lineTo(wbevent.coordinates[0],
+                         wbevent.coordinates[1]);
+          this.context.stroke();
+      } else if (type === "closepath") {
+          this.context.closePath();
+      } else if(type === "strokestyle") {
+          this.context.strokeStyle = wbevent.color;
+      } else if (type === "erase") {
+          this.context.clearRect(wbevent.coordinates[0],
+                            wbevent.coordinates[1],
+                            wbevent.width,
+                            wbevent.height);
+      }
 
     },
 
@@ -186,13 +185,13 @@ window.Wb = {
       clearInterval(Wb.clockInterval);
     },
 
-    /* calls set clock every x milliseconds for when animating
+    /* calls set clock every x milliseconds for when playing back
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */
-    incrementingClock: function(time){
+    playbackClock: function(time){
       WbUi.setClock(time);
       time += 500;
-      Wb.clockInterval = setTimeout(Wb.incrementingClock, 500, time);
+      Wb.clockInterval = setTimeout(Wb.playbackClock, 500, time);
     },
 
 
@@ -205,7 +204,7 @@ window.Wb = {
       }
     },
 
-    /* Gets the time elapsed in recording mode, should be only called while recording*/
+    /* Gets the time elapsed in recording mode*/
     getRecordingTime: function(){
       if (Wb.recording) {
         Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
@@ -235,7 +234,7 @@ window.Wb = {
      */
     animate: function() {
       WbUi.pauseRecord();
-      Wb.incrementingClock(0);
+      Wb.playbackClock(0);
       Wb.animationind = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       Wb.animatenext();
@@ -247,24 +246,23 @@ window.Wb = {
      * current and next event before calling itself again.
      */
     animatenext: function() {
-        if (Wb.animationind === 0) {
-          console.log("first");
-          console.log("time: " + Wb.events[0].time);
-          setTimeout(function(){
-            Wb.execute(Wb.events[0], false);
-            Wb.animationind++;
-          }, Wb.events[0].time);
-        } else {
-          Wb.execute(Wb.events[Wb.animationind], false);
+      if (Wb.animationind === 0) {
+        console.log("first");
+        console.log("time: " + Wb.events[0].time);
+        setTimeout(function(){
+          Wb.execute(Wb.events[0], false);
           Wb.animationind++;
-        }
-        if (Wb.animationind < Wb.events.length - 1) {
-          var dtime = Wb.events[Wb.animationind + 1].time - Wb.events[Wb.animationind].time;
-          console.log(dtime);
-          setTimeout(Wb.animatenext, dtime);
-        } else {
-//          clearTimeout(Wb.clockInterval);
-        }
+        }, Wb.events[0].time);
+      } else {
+        Wb.execute(Wb.events[Wb.animationind], false);
+        Wb.animationind++;
+      }
+      if (Wb.animationind < Wb.events.length - 1) {
+        var dtime = Wb.events[Wb.animationind + 1].time - Wb.events[Wb.animationind].time;
+        console.log(dtime);
+        setTimeout(Wb.animatenext, dtime);
+      } else {
+      }
     },
 
     /* called when someone clicks or moves the scrubber */
@@ -346,13 +344,20 @@ window.Wb = {
     */
     redraw: function(time) {
         //this.init();
+      console.log("time: " +time);
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-        var redrawEvents = this.events;
-        this.events = [];
-        
-        for(var i=0;i < redrawEvents.length; i++) {
-            this.execute(redrawEvents[i]);
+      var redrawEvents = this.events;
+      this.events = [];
+      for(var i=0;i < redrawEvents.length; i++) {
+        console.log("evt time: " + redrawEvents[i]["time"]);
+        if (time && redrawEvents[i]["time"] > time) {
+          console.log("breaking at: " + redrawEvents[i]);
+          break;
+        } else {
+          console.log("drawing: " + redrawEvents[i]);
+          this.execute(redrawEvents[i]);
         }
+      }
     },
 
      /**
@@ -375,9 +380,9 @@ window.Wb = {
      * effective then to redraw but time is limited)
     */
     undo: function() {
-        reverseEvent = Wb.events.pop();
-        console.log(reverseEvent.type);
-        Wb.redraw();
+      reverseEvent = Wb.events.pop();
+      console.log(reverseEvent.type);
+      Wb.redraw();
     }
 
     /* === END ACTIONS === */

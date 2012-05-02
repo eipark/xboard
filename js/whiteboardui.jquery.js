@@ -72,7 +72,7 @@ window.WbUi = {
    */
   init: function(canvasElement, elemconf) {
     this.canvasElement = canvasElement;
-    $("#xboard-container #slider").slider({animate: "fast"});
+    $("#xboard-container #slider").slider({animate: 200});
     Wb.init(canvasElement.attr("id"));
     if (elemconf !== undefined) {
       for (var i in this.elementConf) {
@@ -133,7 +133,9 @@ window.WbUi = {
 
     $("#xboard-container #slider").slider({
       slide: function(event, ui) {
-        
+        Wb.redraw(ui.value);
+        clearTimeout(Wb.clockInterval);
+        Wb.playbackClock(ui.value);
       }
     });
 
@@ -293,22 +295,27 @@ window.WbUi = {
     WbUi.canvasElement.unbind("mouseout");
   },
 
-  /* sets the clock time */
+  /* sets the clock time  */
   setClock: function(time){
+    // if time is passed in, we use it, otherwise we just set it to
+    // the current recording time because it means we are recording
+    // and the total time is increasing
     if (!time){
       time = Wb.getRecordingTime();
       $("#xboard-container #slider").slider("option", "max", time);
     } else if (time > Wb.getRecordingTime()) {
-      // to ensure the timer keeps going if there are no events
-      // for a few seconds at the end, then clearinterval
+      // since this time is set by an incrementer, the last one will exceed
+      // our recording time so we set it back down and stop the timeout
+      // since we've reached the end of playback
       time = Wb.getRecordingTime();
       clearTimeout(Wb.clockInterval);
     }
     // set clocks in UI, elapsed/total
     $("#elapsed_timer").html(readableTime(time));
+    // want Wb.getRecordingTime() since on playback recordingtime stays same
     $("#total_timer").html(readableTime(Wb.getRecordingTime()));
 
-    // set slider
+    // set slider position
     $("#xboard-container #slider").slider("option", "value", time);
   },
 
