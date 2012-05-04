@@ -46,9 +46,19 @@ div#bottom-row{
   height: 50px;
   width: 578px;
 }
+
+button#play_pause{
+  display:inline-block;
+}
+
 .is_recording{
   background: red;
 }
+
+.is_playing {
+  background: blue;
+}
+
 
 #canvas-container {
   /*overflow: scroll;*/
@@ -92,7 +102,7 @@ div#bottom-row{
 
 #zoom_element #zoom_section {
   position: absolute;
-  background-color: #ffffff;  
+  background-color: #ffffff;
   width: 50px;
   height: 100%;
 }
@@ -120,6 +130,7 @@ div#bottom-row{
   border: 1px solid #000;
   padding: 2px;
 }
+
 
 /* Cursors */
 .pencil_active {cursor: url(img/pencil.gif), auto;}

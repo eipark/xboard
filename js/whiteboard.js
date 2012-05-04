@@ -92,13 +92,17 @@ window.Wb = {
     canvas: null,
     type: '',
     coordinates: [0,0],
-    events: [],
+    events: [], // gets reset when animating
     animationind: 0,
     recording: false,
     recordingTime: 0,
     lastEndTime: 0,
     subtractTime: 0,
-    clockInterval: null, // used for both playback and recording interval/timeout
+    recordClockInterval: null, // used for both playback and recording interval/timeout
+    playbackClockTimeout: null,
+    playbackClock: 0,
+    sampleRate: 250, // ms increments for clock intervals
+    animateTimeout: null,
     drawColor: '#000000',
 
     /**
@@ -139,13 +143,16 @@ window.Wb = {
      *          should be saved to this.events
      * This object should be one of the model's event objects.
      */
-    execute: function(wbevent, firstexecute) {
+    //execute: function(wbevent, firstexecute) {
+    execute: function(wbevent){
       var type = wbevent.type;
       var wid;
       var hei;
       var tmp;
-      if(firstexecute || firstexecute === undefined) {
-          //wbevent.time = Wb.getRecordingTime();
+
+      // Only push and save if we're recording... otherwise we're
+      // just replaying  an action and don't need to save it.
+      if(Wb.recording) {
           this.events.push(wbevent);
       }
 
@@ -174,26 +181,41 @@ window.Wb = {
     record: function(){
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
-      console.log("record, subtractTime: "+Wb.subtractTime);
-      Wb.clockInterval = setInterval(WbUi.setClock, 500);
-
+      console.log("record, subtractTime: "+ Wb.subtractTime);
+      Wb.recordClockInterval = setInterval(WbUi.setClock, Wb.sampleRate);
     },
 
     pauseRecord: function(){
+      console.log("Wb.pauseRecord ----------");
       Wb.recording = false;
+      // keep track of this to make one smooth timeline even if we stop
+      // and start recording sporadically.
       Wb.lastEndTime = new Date().getTime();
-      clearInterval(Wb.clockInterval);
+      // playback clock should be same as recording time when we stop recording
+      Wb.playbackClock = Wb.getRecordingTime();
+      clearInterval(Wb.recordClockInterval);
     },
 
     /* calls set clock every x milliseconds for when playing back
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */
-    playbackClock: function(time){
-      WbUi.setClock(time);
-      time += 500;
-      Wb.clockInterval = setTimeout(Wb.playbackClock, 500, time);
-    },
+    setPlaybackClock: function(time){
+      if (!(time === undefined)) {
+        Wb.playbackClock = time;
+      } else {
+        Wb.playbackClock += Wb.sampleRate;
+      }
+      console.log("playbackclock: " + Wb.playbackClock);
+      WbUi.setClock(Wb.playbackClock);
+      // to make sure we stop at the end of playback
+      if (Wb.playbackClock <= Wb.getRecordingTime()) {
+        Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
+      } else {
+        Wb.playbackClock = Wb.getRecordingTime();
+        WbUi.playPauseToggle();
+      }
 
+    },
 
     checkRecordStatus: function(){
       if (Wb.recording){
@@ -228,46 +250,69 @@ window.Wb = {
     /* === BEGIN ACTIONS === */
 
     /**
-     * Starts the animation action in the canvas. This clears
+     * Starts the animation action in the canvas from start. This clears
      * the whole canvas and starts to execute actions from
      * the action stack by calling Wb.animatenext().
+     * Will reset playback clock as well.
      */
     animate: function() {
-      WbUi.pauseRecord();
-      Wb.playbackClock(0);
+      Wb.setPlaybackClock(0);
       Wb.animationind = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       Wb.animatenext();
     },
 
     /**
-     * This function animates the next event in the event 
-     * stack and waits for the amount of time between the 
+     * This function animates the next event in the event
+     * stack and waits for the amount of time between the
      * current and next event before calling itself again.
      */
     animatenext: function() {
       if (Wb.animationind === 0) {
-        console.log("first");
-        console.log("time: " + Wb.events[0].time);
-        setTimeout(function(){
+        Wb.animateTimeout = setTimeout(function(){
           Wb.execute(Wb.events[0], false);
           Wb.animationind++;
         }, Wb.events[0].time);
       } else {
-        Wb.execute(Wb.events[Wb.animationind], false);
+        //Wb.execute(Wb.events[Wb.animationind], false);
+        Wb.execute(Wb.events[Wb.animationind]);
         Wb.animationind++;
       }
       if (Wb.animationind < Wb.events.length - 1) {
         var dtime = Wb.events[Wb.animationind + 1].time - Wb.events[Wb.animationind].time;
-        console.log(dtime);
-        setTimeout(Wb.animatenext, dtime);
+        Wb.animateTimeout = setTimeout(Wb.animatenext, dtime);
       } else {
       }
     },
 
     /* called when someone clicks or moves the scrubber */
-    animateJump: function(){
+    jump: function(time){
+      Wb.redraw(time);
+      clearTimeout(Wb.playbackClockTimeout);
+      Wb.setPlaybackClock(time);
+      Wb.animateTimeout = setTimeout(Wb.animatenext, Wb.events[Wb.animationind]["time"] - time);
+    },
 
+    // stops playback and playback clock
+    pause: function(){
+      console.log("--- pausing at ind: " + Wb.animationind);
+      clearTimeout(Wb.animateTimeout);
+      // could be redundant if we already cleared timeout at end of playback, but
+      // that's ok
+      clearTimeout(Wb.playbackClockTimeout);
+      console.log("--- paused");
+    },
+
+    // start clock again and continue animating from the proper index.
+    play: function(){
+      console.log("--- playing at ind: " + Wb.animationind);
+      if (Wb.playbackClock == Wb.getRecordingTime()) {
+        Wb.animate();
+      } else {
+        Wb.setPlaybackClock();
+        Wb.animatenext();
+      }
+      console.log("--- playing");
     },
 
     /**
@@ -290,7 +335,7 @@ window.Wb = {
 
     /**
      * Begins a drawing path.
-     * 
+     *
      * @param x Coordinate x of the path starting point
      * @param y Coordinate y of the path starting point
      */
@@ -302,7 +347,7 @@ window.Wb = {
     /**
      * Draws a path from the path starting point to the
      * point indicated by the given parameters.
-     * 
+     *
      * @param x Coordinate x of the path ending point
      * @param y Coordinate y of the path ending point
      */
@@ -338,23 +383,21 @@ window.Wb = {
     },
 
     /**
-     * This function redraws the entire canvas 
+     * This function redraws the entire canvas
      * according to the events in events.
      * If a time is specified it only redraws up to that point
     */
     redraw: function(time) {
         //this.init();
-      console.log("time: " +time);
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      var redrawEvents = this.events;
-      this.events = [];
-      for(var i=0;i < redrawEvents.length; i++) {
-        console.log("evt time: " + redrawEvents[i]["time"]);
+      var redrawEvents = Wb.events;
+
+      for(var i = 0; i < redrawEvents.length; i++) {
         if (time && redrawEvents[i]["time"] > time) {
-          console.log("breaking at: " + redrawEvents[i]);
+          // this will be the next animation we start with
+          Wb.animationind = i;
           break;
         } else {
-          console.log("drawing: " + redrawEvents[i]);
           this.execute(redrawEvents[i]);
         }
       }

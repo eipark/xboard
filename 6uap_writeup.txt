@@ -32,7 +32,16 @@ how timing works
 - PLAYBACK: incrementing clock updates every 500ms, stopped when it exceeds recordingtime... update clock timers when you click DURING playback.
 
 
+- we assume that the redraw is fast enough, (show performance metric?)
+- binary search over times to find closest event?
+- a level of non-precision, but happens quick enough it seems like we can ignore it at this scale assuming a decently modern browser/computer...
 
+
+
+- BIG STATE MACHINE of events, actions, etc. 
+
+- constraining the problem and set of possible actions helped simplify things. disable everything when not in record mode.
+- single threaded nature of javascript, clocks, not precise, but close enough.
 
 
 
@@ -40,3 +49,5 @@ how timing works
 IMPROVEMENTS
 
 - something like backbone.js
+
+

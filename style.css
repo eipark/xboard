@@ -46,6 +46,13 @@ div#bottom-row{
   height: 50px;
   width: 578px;
 }
+
+div#play-pause-button{
+  border-right: 1px solid #000;
+  height: 100%;
+  display: inline-block;
+}
+
 .is_recording{
   background: red;
 }

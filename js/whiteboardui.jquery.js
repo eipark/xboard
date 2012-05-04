@@ -57,8 +57,9 @@ window.WbUi = {
     button_undo:    null,
     input_color:    null,
     button_record: null,
+    play_pause: null,
   },
-  
+
   /**
    * Initializes the Wb UI script.
    * 
@@ -100,11 +101,11 @@ window.WbUi = {
     }
     return WbUi.elementConf[ind];
   },
-  
+
   /**
    * Resolves the jQuery element with the defined id which
    * is resolved by WbUi.getElementName function.
-   * 
+   *
    * @param ind The element's index name in WbUi.elemConf
    * or the wanted id name that's not included in that array.
    * @return The jQuery element with the resolved id
@@ -112,7 +113,7 @@ window.WbUi = {
   getElement: function(ind) {
     return $('#' + WbUi.getElementName(ind));
   },
-  
+
   /**
    * Adds all the UI's needed action listeners for buttons
    * and other UI elements.
@@ -127,43 +128,52 @@ window.WbUi = {
     });
     WbUi.getElement('button_eraser').mousedown(WbUi.activateEraser);
     WbUi.getElement('button_animate').mousedown(Wb.animate);
-    WbUi.getElement('recorder').mousedown(WbUi.toggleRecord);
+    WbUi.getElement('recorder').mousedown(WbUi.recordToggle);
     WbUi.getElement('button_undo').mousedown(Wb.undo);
+    WbUi.getElement('play_pause').mousedown(WbUi.playPauseToggle);
     //remove onmousedown from html and make this work
 
     $("#xboard-container #slider").slider({
       slide: function(event, ui) {
-        Wb.redraw(ui.value);
-        clearTimeout(Wb.clockInterval);
-        Wb.playbackClock(ui.value);
+        Wb.jump(ui.value);
       }
     });
 
   },
-  
-  toggleRecord: function() {
-    var elt = $("#recorder");
-    if (elt.hasClass("not_recording")) {
-      WbUi.record();
+
+  // toggles a class and calls a function for both cases when the class
+  // is there and not there. Small wrapper, for record and play button.
+  toggler: function(elt, toggle_class, truth_func, false_func) {
+    if (elt.hasClass(toggle_class)){
+      elt.removeClass(toggle_class);
+      truth_func();
     } else {
-      WbUi.pauseRecord();
+      elt.addClass(toggle_class);
+      false_func();
     }
   },
 
+  playPauseToggle: function() {
+    console.log("--- playpausetoggle");
+    WbUi.toggler($("#play_pause"), "is_playing", Wb.pause, Wb.play);
+  },
+
+  recordToggle: function() {
+    WbUi.toggler($("#recorder"), "is_recording", WbUi.pauseRecord, WbUi.record);
+  },
+
+  // Changes recording button and disables buttons not appropriate
+  // for recording state.
   record: function(elt) {
-    var elt = $("#recorder");
-    if (elt.hasClass("not_recording")) {
-      elt.removeClass("not_recording").addClass("is_recording").html("Pause Record");
-      Wb.record();
-    }
+    $("button#play_pause").attr("disabled", true);
+    $("#slider").slider("disable");
+    Wb.record();
   },
 
   pauseRecord: function() {
-    var elt = $("#recorder");
-    if (elt.hasClass("is_recording")) {
-      elt.removeClass("is_recording").addClass("not_recording").html("Record");
-      Wb.pauseRecord();
-    }
+    $("button#play_pause").attr("disabled", false);
+    $("#slider").slider("enable");
+    Wb.pauseRecord();
   },
 
   /**
@@ -300,7 +310,8 @@ window.WbUi = {
     // if time is passed in, we use it, otherwise we just set it to
     // the current recording time because it means we are recording
     // and the total time is increasing
-    if (!time){
+    console.log("setclock: " + time);
+    if (!time){ // implies we are recording, so we update the max
       time = Wb.getRecordingTime();
       $("#xboard-container #slider").slider("option", "max", time);
     } else if (time > Wb.getRecordingTime()) {
@@ -308,7 +319,6 @@ window.WbUi = {
       // our recording time so we set it back down and stop the timeout
       // since we've reached the end of playback
       time = Wb.getRecordingTime();
-      clearTimeout(Wb.clockInterval);
     }
     // set clocks in UI, elapsed/total
     $("#elapsed_timer").html(readableTime(time));
@@ -319,9 +329,5 @@ window.WbUi = {
     $("#xboard-container #slider").slider("option", "value", time);
   },
 
-  disableSlider: function(){
-    
-
-  },
 };
 })();
