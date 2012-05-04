@@ -183,6 +183,10 @@ window.Wb = {
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
       console.log("record, subtractTime: "+ Wb.subtractTime);
+      if (!Wb.playbackEnd()) {
+        Wb.redraw();
+        console.log("shouldve redrawn");
+      }
       Wb.recordClockInterval = setInterval(WbUi.setClock, Wb.sampleRate);
     },
 
@@ -278,8 +282,8 @@ window.Wb = {
           Wb.animationind++;
         }, Wb.events[0].time);
       } else {
-        //Wb.execute(Wb.events[Wb.animationind], false);
-        Wb.execute(Wb.events[Wb.animationind]);
+        Wb.execute(Wb.events[Wb.animationind], false);
+        //Wb.execute(Wb.events[Wb.animationind]);
         Wb.animationind++;
       }
       if (Wb.animationind < Wb.events.length - 1) {
@@ -316,7 +320,7 @@ window.Wb = {
     play: function(){
       console.log("--- playing at ind: " + Wb.animationind);
       Wb.isPlaying = true;
-      if (Wb.playbackClock == Wb.getRecordingTime()) {
+      if (Wb.playbackEnd()) {
         Wb.animate();
       } else {
         Wb.setPlaybackClock();
@@ -341,6 +345,11 @@ window.Wb = {
       alert(Wb.events);
       Wb.events = JSON.parse(Wb.events);
       alert(Wb.events);
+    },
+
+    // check if playback is at max time
+    playbackEnd: function(){
+      return Wb.playbackClock == Wb.getRecordingTime();
     },
 
     /**

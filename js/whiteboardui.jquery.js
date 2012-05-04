@@ -155,7 +155,7 @@ window.WbUi = {
 
   playPauseToggle: function() {
     console.log("--- playpausetoggle");
-    WbUi.toggler($("#play_pause"), "is_playing", Wb.pause, Wb.play);
+    WbUi.toggler($("#play_pause"), "is_playing", WbUi.pause, WbUi.play);
   },
 
   recordToggle: function() {
@@ -176,6 +176,15 @@ window.WbUi = {
     Wb.pauseRecord();
   },
 
+  play: function() {
+    $("#recorder").attr("disabled", true);
+    Wb.play();
+  }, 
+
+  pause: function() {
+    $("#recorder").attr("disabled", false);
+    Wb.pause();
+  }, 
   /**
    * Resolves the X coordinate of the given event inside
    * the canvas element.
