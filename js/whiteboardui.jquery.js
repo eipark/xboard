@@ -177,14 +177,17 @@ window.WbUi = {
   },
 
   play: function() {
+    console.log("---WbUi.play()");
     $("#recorder").attr("disabled", true);
     Wb.play();
-  }, 
+  },
 
   pause: function() {
+    console.log("---WbUi.pause()");
     $("#recorder").attr("disabled", false);
     Wb.pause();
-  }, 
+  },
+
   /**
    * Resolves the X coordinate of the given event inside
    * the canvas element.

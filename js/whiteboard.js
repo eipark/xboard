@@ -118,10 +118,10 @@ window.Wb = {
       this.canvas = document.getElementById(canvasid);
       this.canvas.width = this.canvas.offsetWidth;
       this.canvas.height = this.canvas.offsetHeight;
-  
+
       //console.log(this.canvas);
       this.context = this.canvas.getContext('2d');
-  
+
       //initial values for the drawing context
       this.context.lineWidth = 5;
       this.context.lineCap = "round";
@@ -154,7 +154,7 @@ window.Wb = {
       // Only push and save if we're recording... otherwise we're
       // just replaying  an action and don't need to save it.
       if(Wb.recording) {
-          this.events.push(wbevent);
+          Wb.events.push(wbevent);
       }
 
       if(type === "beginpath") {
@@ -180,13 +180,13 @@ window.Wb = {
     },
 
     record: function(){
+      if (!Wb.playbackEnd()) {
+        console.log("shouldve redrawn");
+        Wb.redraw();
+      }
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
       console.log("record, subtractTime: "+ Wb.subtractTime);
-      if (!Wb.playbackEnd()) {
-        Wb.redraw();
-        console.log("shouldve redrawn");
-      }
       Wb.recordClockInterval = setInterval(WbUi.setClock, Wb.sampleRate);
     },
 
@@ -278,12 +278,13 @@ window.Wb = {
     animatenext: function() {
       if (Wb.animationind === 0) {
         Wb.animateTimeout = setTimeout(function(){
-          Wb.execute(Wb.events[0], false);
+          //Wb.execute(Wb.events[0], false);
+          Wb.execute(Wb.events[0]);
           Wb.animationind++;
         }, Wb.events[0].time);
       } else {
-        Wb.execute(Wb.events[Wb.animationind], false);
-        //Wb.execute(Wb.events[Wb.animationind]);
+        //Wb.execute(Wb.events[Wb.animationind], false);
+        Wb.execute(Wb.events[Wb.animationind]);
         Wb.animationind++;
       }
       if (Wb.animationind < Wb.events.length - 1) {
@@ -408,16 +409,18 @@ window.Wb = {
     */
     redraw: function(time) {
         //this.init();
+        console.log("---in redraw");
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      var redrawEvents = Wb.events;
-
-      for(var i = 0; i < redrawEvents.length; i++) {
-        if (time && redrawEvents[i]["time"] > time) {
+//      var redrawEvents = Wb.events;
+      console.log("LEN: " + Wb.events.length);
+      for(var i = 0; i < Wb.events.length; i++) {
+        console.log(i);
+        if (time && Wb.events[i]["time"] > time) {
           // this will be the next animation we start with
           Wb.animationind = i;
           break;
         } else {
-          this.execute(redrawEvents[i]);
+          this.execute(Wb.events[i]);
         }
       }
     },
