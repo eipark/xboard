@@ -44,7 +44,7 @@ how timing works
 - single threaded nature of javascript, clocks, not precise, but close enough.
 
 
-
+- BUG: canvas connects tsrokes sometimes
 
 IMPROVEMENTS
 
