@@ -101,6 +101,7 @@ window.Wb = {
     recordClockInterval: null, // used for both playback and recording interval/timeout
     playbackClockTimeout: null,
     playbackClock: 0,
+    isPlaying: false,
     sampleRate: 250, // ms increments for clock intervals
     animateTimeout: null,
     drawColor: '#000000',
@@ -205,14 +206,17 @@ window.Wb = {
       } else {
         Wb.playbackClock += Wb.sampleRate;
       }
-      console.log("playbackclock: " + Wb.playbackClock);
       WbUi.setClock(Wb.playbackClock);
-      // to make sure we stop at the end of playback
-      if (Wb.playbackClock <= Wb.getRecordingTime()) {
-        Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
-      } else {
-        Wb.playbackClock = Wb.getRecordingTime();
-        WbUi.playPauseToggle();
+
+      if (Wb.isPlaying) {
+        // to make sure we stop at the end of playback
+        if (Wb.playbackClock <= Wb.getRecordingTime()) {
+          Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
+        } else {
+          Wb.isPlaying = false;
+          Wb.playbackClock = Wb.getRecordingTime();
+          WbUi.playPauseToggle();
+        }
       }
 
     },
@@ -289,16 +293,21 @@ window.Wb = {
     jump: function(time){
       Wb.redraw(time);
       clearTimeout(Wb.playbackClockTimeout);
-      Wb.setPlaybackClock(time);
-      Wb.animateTimeout = setTimeout(Wb.animatenext, Wb.events[Wb.animationind]["time"] - time);
+      if (Wb.isPlaying) {
+        Wb.setPlaybackClock(time);
+        Wb.animateTimeout = setTimeout(Wb.animatenext, Wb.events[Wb.animationind]["time"] - time);
+      } else {
+        Wb.setPlaybackClock(time);
+      }
     },
 
     // stops playback and playback clock
     pause: function(){
       console.log("--- pausing at ind: " + Wb.animationind);
-      clearTimeout(Wb.animateTimeout);
+      Wb.isPlaying = false;
       // could be redundant if we already cleared timeout at end of playback, but
       // that's ok
+      clearTimeout(Wb.animateTimeout);
       clearTimeout(Wb.playbackClockTimeout);
       console.log("--- paused");
     },
@@ -306,6 +315,7 @@ window.Wb = {
     // start clock again and continue animating from the proper index.
     play: function(){
       console.log("--- playing at ind: " + Wb.animationind);
+      Wb.isPlaying = true;
       if (Wb.playbackClock == Wb.getRecordingTime()) {
         Wb.animate();
       } else {
