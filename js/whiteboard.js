@@ -80,11 +80,11 @@ function StrokeStyle(color) {
 /* === END Event objects === */
 
 
-  
+
 /**
  * ====================
  *    STATIC CONTROL
- * ====================   
+ * ====================
  */
 window.Wb = {
 
@@ -92,13 +92,13 @@ window.Wb = {
     canvas: null,
     type: '',
     coordinates: [0,0],
-    events: [], // gets reset when animating
-    animationind: 0,
+    events: [],
+    animationIndex: 0,
     recording: false,
     recordingTime: 0,
     lastEndTime: 0,
     subtractTime: 0,
-    recordClockInterval: null, // used for both playback and recording interval/timeout
+    recordClockInterval: null,
     playbackClockTimeout: null,
     playbackClock: 0,
     isPlaying: false,
@@ -109,7 +109,7 @@ window.Wb = {
     /**
      * Initializes the script by setting the default
      * values for parameters of the class.
-     * 
+     *
      * @param canvasid The id of the canvas element used
      */
     init: function(canvasid) {
@@ -133,12 +133,10 @@ window.Wb = {
 
     },
 
-
-    
     /**
      * Executes the event that matches the given event
      * object
-     * 
+     *
      * @param wbevent The event object to be executed.
      * @param firstexecute tells the function if the event is new and
      *          should be saved to this.events
@@ -260,14 +258,14 @@ window.Wb = {
     /**
      * Starts the animation action in the canvas from start. This clears
      * the whole canvas and starts to execute actions from
-     * the action stack by calling Wb.animatenext().
+     * the action stack by calling Wb.animateNext().
      * Will reset playback clock as well.
      */
     animate: function() {
       Wb.setPlaybackClock(0);
-      Wb.animationind = 0;
+      Wb.animationIndex = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      Wb.animatenext();
+      Wb.animateNext();
     },
 
     /**
@@ -275,22 +273,23 @@ window.Wb = {
      * stack and waits for the amount of time between the
      * current and next event before calling itself again.
      */
-    animatenext: function() {
-      if (Wb.animationind === 0) {
+    animateNext: function() {
+      if (Wb.animationIndex === 0) {
         Wb.animateTimeout = setTimeout(function(){
-          //Wb.execute(Wb.events[0], false);
           Wb.execute(Wb.events[0]);
-          Wb.animationind++;
+          Wb.animationIndex++;
         }, Wb.events[0].time);
       } else {
-        //Wb.execute(Wb.events[Wb.animationind], false);
-        Wb.execute(Wb.events[Wb.animationind]);
-        Wb.animationind++;
+        Wb.execute(Wb.events[Wb.animationIndex]);
+        Wb.animationIndex++;
       }
-      if (Wb.animationind < Wb.events.length - 1) {
-        var dtime = Wb.events[Wb.animationind + 1].time - Wb.events[Wb.animationind].time;
-        Wb.animateTimeout = setTimeout(Wb.animatenext, dtime);
-      } else {
+      Wb.animateNextAfterDelay(Wb.events[Wb.animationIndex].time);
+    },
+
+    animateNextAfterDelay: function(time) {
+      if (Wb.animationIndex < Wb.events.length - 1) {
+        var diffTime = Wb.events[Wb.animationIndex + 1].time - time;
+        Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
       }
     },
 
@@ -300,7 +299,8 @@ window.Wb = {
       clearTimeout(Wb.playbackClockTimeout);
       if (Wb.isPlaying) {
         Wb.setPlaybackClock(time);
-        Wb.animateTimeout = setTimeout(Wb.animatenext, Wb.events[Wb.animationind]["time"] - time);
+//        Wb.animateTimeout = setTimeout(Wb.animateNext, Wb.events[Wb.animationIndex]["time"] - time);
+        Wb.animateNextAfterDelay(time);
       } else {
         Wb.setPlaybackClock(time);
       }
@@ -308,7 +308,7 @@ window.Wb = {
 
     // stops playback and playback clock
     pause: function(){
-      console.log("--- pausing at ind: " + Wb.animationind);
+      console.log("--- pausing at ind: " + Wb.animationIndex);
       Wb.isPlaying = false;
       // could be redundant if we already cleared timeout at end of playback, but
       // that's ok
@@ -319,13 +319,13 @@ window.Wb = {
 
     // start clock again and continue animating from the proper index.
     play: function(){
-      console.log("--- playing at ind: " + Wb.animationind);
+      console.log("--- playing at ind: " + Wb.animationIndex);
       Wb.isPlaying = true;
       if (Wb.playbackEnd()) {
         Wb.animate();
       } else {
         Wb.setPlaybackClock();
-        Wb.animatenext();
+        Wb.animateNextAfterDelay(Wb.playbackClock);
       }
       console.log("--- playing");
     },
@@ -411,13 +411,10 @@ window.Wb = {
         //this.init();
         console.log("---in redraw");
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-//      var redrawEvents = Wb.events;
-      console.log("LEN: " + Wb.events.length);
       for(var i = 0; i < Wb.events.length; i++) {
-        console.log(i);
         if (time && Wb.events[i]["time"] > time) {
           // this will be the next animation we start with
-          Wb.animationind = i;
+          Wb.animationIndex = i;
           break;
         } else {
           this.execute(Wb.events[i]);

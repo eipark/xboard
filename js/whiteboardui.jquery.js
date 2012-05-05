@@ -32,6 +32,8 @@ function readableTime(ms) {
 window.WbUi = {
   
   canvasElement: null, // jQuery element for canvas
+
+  wasPlaying: false, // cues whether to continue playback when slider stops
   /**
    * The default ids and classes for the element
    * configurations are the index names used in this
@@ -134,8 +136,28 @@ window.WbUi = {
     //remove onmousedown from html and make this work
 
     $("#xboard-container #slider").slider({
+      start: function(event, ui) {
+        if (Wb.isPlaying) {
+          WbUi.wasPlaying = Wb.isPlaying;
+          Wb.pause();
+        }
+      }
+    });
+
+    $("#xboard-container #slider").slider({
       slide: function(event, ui) {
+        // could add tooltips on slide for time updates
+      }
+    });
+
+    $("#xboard-container #slider").slider({
+      stop: function(event, ui) {
         Wb.jump(ui.value);
+        if (WbUi.wasPlaying) {
+          Wb.play();
+          WbUi.wasPlaying = false;
+        }
+        console.log("xxxxxxxxxx --- stop");
       }
     });
 

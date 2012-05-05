@@ -45,9 +45,34 @@ how timing works
 
 
 - BUG: canvas connects tsrokes sometimes
+- when scrolling while playing, we must pause while in the scrolling state, then only start playback again when the slider is stopped. otherwise leads to weird bugs
+- when scrub to start of video, it jumps to end and back
+- stop playback when we have grabbed the handle
 
 IMPROVEMENTS
 
 - something like backbone.js
+
+
+// TODO
+- fix stroke bug
+- tooltip on changing slider
+- remove slider JS clutter
+- disable palette on not-record
+- CSS
+- stroke size
+- color
+- eraser size
+
+- style
+
+- check save/load from JSON
+- make embeddable
+- switches for create/embed mode
+
+- better comments
+- clean up code
+
+- 
 
 
