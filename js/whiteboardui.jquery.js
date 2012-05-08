@@ -166,7 +166,6 @@ window.WbUi = {
 
     $("#xboard-container #slider").slider({
       stop: function(event, ui) {
-        console.log("slider val: " + ui.value);
         Wb.jump(ui.value);
         if (WbUi.wasPlaying) {
           Wb.play();
@@ -364,7 +363,6 @@ window.WbUi = {
     // if time is passed in, we use it, otherwise we just set it to
     // the current recording time because it means we are recording
     // and the total time is increasing
-    //console.log("setclock: " + time);
     if (typeof time === "undefined"){ // implies we are recording, so we update the max
       time = Wb.getRecordingTime();
       $("#xboard-container #slider").slider("option", "max", time);
