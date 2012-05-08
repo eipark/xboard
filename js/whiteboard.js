@@ -94,7 +94,7 @@ window.Wb = {
     type: '',
     coordinates: [0,0],
     events: [],
-    animationIndex: 0, // next in queue
+    animIndex: 0, // next in queue
     recording: false,
     recordingTime: 0,
     lastEndTime: 0,
@@ -127,11 +127,9 @@ window.Wb = {
       this.context.lineWidth = 5;
       this.context.lineCap = "square";
 
-      // Initialize the selected color
-      var col = this.drawColor;
-      this.drawColor = null;
-      this.setStrokeStyle(col);
-
+      // Initialize the selected color and add it as the first event
+      var e = new StrokeStyle(Wb.drawColor);
+      Wb.events.push(e);
     },
 
     /**
@@ -150,32 +148,32 @@ window.Wb = {
       var hei;
       var tmp;
 
-      // Only push and save if we're recording... otherwise we're
-      // just replaying  an action and don't need to save it.
-      if(Wb.recording || (!Wb.isPlaying && type == "strokestyle")) {
-          Wb.events.push(wbevent);
+      // Only push and save if we're recording or initial color set 
+      // otherwise we're just replaying an action and don't need to save it.
+      //if(Wb.recording || (!Wb.isPlaying && type == "strokestyle")) {
+      if (Wb.recording){
+        Wb.events.push(wbevent);
       }
 
-      //console.log("ind: " + Wb.animationIndex);
       if(type === "beginpath") {
-          this.context.beginPath();
-          this.context.moveTo(wbevent.coordinates[0],
-                         wbevent.coordinates[1]);
-          this.context.stroke();
+        this.context.beginPath();
+        this.context.moveTo(wbevent.coordinates[0],
+                       wbevent.coordinates[1]);
+        this.context.stroke();
       } else if (type === "drawpathtopoint") {
-          this.context.lineTo(wbevent.coordinates[0],
-                         wbevent.coordinates[1]);
-          this.context.stroke();
+        this.context.lineTo(wbevent.coordinates[0],
+                       wbevent.coordinates[1]);
+        this.context.stroke();
       } else if (type === "closepath") {
-          this.context.closePath();
+        this.context.closePath();
       } else if(type === "strokestyle") {
-          this.context.strokeStyle = wbevent.color;
+        this.context.strokeStyle = wbevent.color;
       } else if (type === "erase") {
-          this.context.clearRect(wbevent.coordinates[0],
-                            wbevent.coordinates[1],
-                            wbevent.width,
-                            wbevent.height);
-      }
+        this.context.clearRect(wbevent.coordinates[0],
+                               wbevent.coordinates[1],
+                               wbevent.width,
+                               wbevent.height);
+        }
 
     },
 
@@ -183,14 +181,11 @@ window.Wb = {
       // if in middle of playback and you record, go back to the end of the
       // recording, only supporting appending for records
       if (!Wb.playbackEnd()) {
-        console.log("shouldve redrawn");
         Wb.redraw();
       }
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
       console.log("record, subtractTime: "+ Wb.subtractTime);
-      //Wb.recordClockInterval = setInterval(WbUi.setClock, Wb.sampleRate);
-      //Wb.recordClockInterval = setTimeout(WbUi.setClockInterval, Wb.sampleRate);
       WbUi.setClockInterval();
     },
 
@@ -209,16 +204,19 @@ window.Wb = {
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */
     setPlaybackClock: function(time){
-      if (!(time === undefined)) {
-        Wb.playbackClock = time;
-      } else {
+      if (time === undefined) {
+        // if no explicit time passed in, increment the current playbackClock
         Wb.playbackClock += Wb.sampleRate;
+      } else {
+        Wb.playbackClock = time;
       }
+
       WbUi.setClock(Wb.playbackClock);
 
+      // set timeout if we're in play mode
       if (Wb.isPlaying) {
         // to make sure we stop at the end of playback
-        if (Wb.playbackClock <= Wb.getRecordingTime()) {
+        if (Wb.playbackClock < Wb.getRecordingTime()) {
           Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
         } else {
           Wb.isPlaying = false;
@@ -270,7 +268,7 @@ window.Wb = {
     animate: function() {
       console.log("--- playing from beginning");
       Wb.setPlaybackClock(0);
-      Wb.animationIndex = 0;
+      Wb.animIndex = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       if (Wb.events.length > 0) {
         Wb.animateNext(Wb.events[0].time);
@@ -289,16 +287,16 @@ window.Wb = {
       if (delay != undefined) {
         Wb.animateTimeout = setTimeout(Wb.animateNext);
       } else {
-        if (Wb.animationIndex === 0) {
+        if (Wb.animIndex === 0) {
           Wb.animateTimeout = setTimeout(function(){
             Wb.execute(Wb.events[0]);
           }, Wb.events[0].time);
         } else {
-          Wb.execute(Wb.events[Wb.animationIndex]);
+          Wb.execute(Wb.events[Wb.animIndex]);
         }
-        Wb.animationIndex++;
-        if (Wb.animationIndex < Wb.events.length - 1) {
-          var diffTime = Wb.events[Wb.animationIndex].time - Wb.events[Wb.animationIndex - 1].time;
+        Wb.animIndex++;
+        if (Wb.animIndex < Wb.events.length - 1) {
+          var diffTime = Wb.events[Wb.animIndex].time - Wb.events[Wb.animIndex - 1].time;
           Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
         }
       }
@@ -308,19 +306,16 @@ window.Wb = {
     /* called when someone clicks or moves the scrubber */
     jump: function(time){
       Wb.redraw(time);
+      // stop the old playbackClockTimeout and start a new one at our new time
       clearTimeout(Wb.playbackClockTimeout);
       Wb.setPlaybackClock(time);
       if (Wb.isPlaying) {
-//        Wb.animateTimeout = setTimeout(Wb.animateNext, Wb.events[Wb.animationIndex]["time"] - time);
-        //Wb.animateNextAfterDelay(time);
-        Wb.animateNext(Wb.events[Wb.animationIndex].time - time);
+        Wb.animateNext(Wb.events[Wb.animIndex].time - time);
       }
-      
     },
 
     // stops playback and playback clock
     pause: function(){
-      console.log("--- pausing at ind: " + Wb.animationIndex);
       Wb.isPlaying = false;
       // could be redundant if we already cleared timeout at end of playback, but
       // that's ok
@@ -331,14 +326,17 @@ window.Wb = {
 
     // start clock again and continue animating from the proper index.
     play: function(){
-      console.log("--- playing at ind: " + Wb.animationIndex);
+      console.log("--- playing at ind: " + Wb.animIndex);
       Wb.isPlaying = true;
       if (Wb.playbackEnd()) {
         Wb.animate();
       } else {
         Wb.setPlaybackClock();
-//        Wb.animateNextAfterDelay(Wb.playbackClock);
-        Wb.animateNext(Wb.events[Wb.animationIndex].time - Wb.playbackClock);
+
+        // only animate if we haven't played all the events yet
+        if (!Wb.eventsEnd()){
+          Wb.animateNext(Wb.events[Wb.animIndex].time - Wb.playbackClock);
+        }
       }
     },
 
@@ -363,6 +361,11 @@ window.Wb = {
     // check if playback is at max time
     playbackEnd: function(){
       return Wb.playbackClock == Wb.getRecordingTime();
+    },
+
+    // check if all events have been played in playback
+    eventsEnd: function() {
+      return Wb.animIndex == (Wb.events.length - 1);
     },
 
     /**
@@ -425,31 +428,21 @@ window.Wb = {
      * If a time is specified it only redraws up to that point
      * TODO: If we are jumping to a time in the future from current playback
      * we optimize the redraw by not refreshing the entire canvas.
+     * TODO: Rather than check condition every time in the loop, optimize
+     * by finding the event up to which we need to check before hand. Maybe
+     * a binary search over the events?
     */
     redraw: function(time) {
-      if (time < Wb.playbackClock) {
-        // we need to reinitialize the canvas state if we're going back in time
-        // so that any current state doesn't corrupt how we re-draw up to a previous
-        // state
-        console.log("initing");
-        //this.init("canvas");
-      } else {
-      }
-
-      console.log("---in redraw");
+      console.log("redraw time: " + time);
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      var debug = "";
-      for(var i = 0; i < Wb.events.length; i++) {
-        if (time && Wb.events[i]["time"] > time) {
+      for (Wb.animIndex = 0; Wb.animIndex < Wb.events.length; Wb.animIndex++) {
+        if (time && Wb.events[Wb.animIndex].time > time) {
           // this will be the next animation we start with
-          Wb.animationIndex = i;
           break;
         } else {
-          debug = debug + " " + i;
-          this.execute(Wb.events[i]);
+          Wb.execute(Wb.events[Wb.animIndex]);
         }
       }
-//      console.log(debug);
     },
 
      /**
@@ -460,10 +453,8 @@ window.Wb = {
        * @param color The wanted stroke color
       */
     setStrokeStyle: function(color) {
-    if (color != Wb.drawColor) {
-        var e = new StrokeStyle(color);
-        Wb.execute(e);
-      }
+      var e = new StrokeStyle(color);
+      Wb.execute(e);
     },
 
     /* === END ACTIONS === */

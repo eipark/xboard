@@ -79,6 +79,9 @@ IMPROVEMENTS
 - better comments
 - clean up code
 
--
+// CURR BUGS
+- playback at beginning or end
+- record, draw. pause record. record. playback to middle
+- new color picker
 
 
