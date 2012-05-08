@@ -94,7 +94,7 @@ window.Wb = {
     type: '',
     coordinates: [0,0],
     events: [],
-    animationIndex: 0,
+    animationIndex: 0, // next in queue
     recording: false,
     recordingTime: 0,
     lastEndTime: 0,
@@ -156,7 +156,7 @@ window.Wb = {
           Wb.events.push(wbevent);
       }
 
-      console.log("ind: " + Wb.animationIndex);
+      //console.log("ind: " + Wb.animationIndex);
       if(type === "beginpath") {
           this.context.beginPath();
           this.context.moveTo(wbevent.coordinates[0],
@@ -189,7 +189,9 @@ window.Wb = {
       Wb.recording = true;
       Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
       console.log("record, subtractTime: "+ Wb.subtractTime);
-      Wb.recordClockInterval = setInterval(WbUi.setClock, Wb.sampleRate);
+      //Wb.recordClockInterval = setInterval(WbUi.setClock, Wb.sampleRate);
+      //Wb.recordClockInterval = setTimeout(WbUi.setClockInterval, Wb.sampleRate);
+      WbUi.setClockInterval();
     },
 
     pauseRecord: function(){
@@ -266,11 +268,12 @@ window.Wb = {
      * Will reset playback clock as well.
      */
     animate: function() {
+      console.log("--- playing from beginning");
       Wb.setPlaybackClock(0);
       Wb.animationIndex = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       if (Wb.events.length > 0) {
-        Wb.animateTimeout = setTimeout(Wb.animateNext, Wb.events[0].time);
+        Wb.animateNext(Wb.events[0].time);
       }
     },
 
@@ -278,43 +281,41 @@ window.Wb = {
      * This function animates the next event in the event
      * stack and waits for the amount of time between the
      * current and next event before calling itself again.
+     * If a time argument is passed in, it is essentially a
+     * delay on the calling of the function. It calls itself
+     * again by setting a timeout.
      */
-    animateNext: function() {
-      /*if (Wb.animationIndex === 0) {
-        Wb.animateTimeout = setTimeout(function(){
-          Wb.execute(Wb.events[0]);
-          Wb.animationIndex++;
-        }, Wb.events[0].time);
+    animateNext: function(delay) {
+      if (delay != undefined) {
+        Wb.animateTimeout = setTimeout(Wb.animateNext);
       } else {
-        Wb.execute(Wb.events[Wb.animationIndex]);
-        Wb.animationIndex++;
-      }*/
-      Wb.execute(Wb.events[Wb.animationIndex]);
-      Wb.animateNextAfterDelay();
-    },
-
-    animateNextAfterDelay: function(time) {
-      if (Wb.animationIndex < Wb.events.length - 1) {
-        if (time === undefined) {
-          time = Wb.events[Wb.animationIndex].time;
+        if (Wb.animationIndex === 0) {
+          Wb.animateTimeout = setTimeout(function(){
+            Wb.execute(Wb.events[0]);
+          }, Wb.events[0].time);
+        } else {
+          Wb.execute(Wb.events[Wb.animationIndex]);
         }
-        var diffTime = Wb.events[Wb.animationIndex + 1].time - time;
-        Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
         Wb.animationIndex++;
+        if (Wb.animationIndex < Wb.events.length - 1) {
+          var diffTime = Wb.events[Wb.animationIndex].time - Wb.events[Wb.animationIndex - 1].time;
+          Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
+        }
       }
     },
+
 
     /* called when someone clicks or moves the scrubber */
     jump: function(time){
       Wb.redraw(time);
       clearTimeout(Wb.playbackClockTimeout);
+      Wb.setPlaybackClock(time);
       if (Wb.isPlaying) {
-        Wb.setPlaybackClock(time);
 //        Wb.animateTimeout = setTimeout(Wb.animateNext, Wb.events[Wb.animationIndex]["time"] - time);
-        Wb.animateNextAfterDelay(time);
-      } else {
-        Wb.setPlaybackClock(time);
+        //Wb.animateNextAfterDelay(time);
+        Wb.animateNext(Wb.events[Wb.animationIndex].time - time);
       }
+      
     },
 
     // stops playback and playback clock
@@ -336,7 +337,8 @@ window.Wb = {
         Wb.animate();
       } else {
         Wb.setPlaybackClock();
-        Wb.animateNextAfterDelay(Wb.playbackClock);
+//        Wb.animateNextAfterDelay(Wb.playbackClock);
+        Wb.animateNext(Wb.events[Wb.animationIndex].time - Wb.playbackClock);
       }
     },
 
@@ -430,7 +432,7 @@ window.Wb = {
         // so that any current state doesn't corrupt how we re-draw up to a previous
         // state
         console.log("initing");
-        this.init("canvas");
+        //this.init("canvas");
       } else {
       }
 
@@ -447,7 +449,7 @@ window.Wb = {
           this.execute(Wb.events[i]);
         }
       }
-      console.log(debug);
+//      console.log(debug);
     },
 
      /**

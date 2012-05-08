@@ -42,7 +42,7 @@ how timing works
 
 - constraining the problem and set of possible actions helped simplify things. disable everything when not in record mode.
 - single threaded nature of javascript, clocks, not precise, but close enough.
-
+- set interval blocking vs settimeout
 
 - BUG: canvas connects tsrokes sometimes
 - when scrolling while playing, we must pause while in the scrolling state, then only start playback again when the slider is stopped. otherwise leads to weird bugs
@@ -69,7 +69,7 @@ IMPROVEMENTS
 - eraser size
 - jump to end when move to start
 - redo stroke color at beginning
-
+- firefox timeout http://benalman.com/news/2009/07/the-mysterious-firefox-settime/
 - style
 
 - check save/load from JSON

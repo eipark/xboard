@@ -382,5 +382,12 @@ window.WbUi = {
     $("#xboard-container #slider").slider("option", "value", time);
   },
 
+  /* Wrapper for setClock that allows an interval to be set
+     using setTimeout instead of setInterval. Prevents "blocking" */
+  setClockInterval: function() {
+    WbUi.setClock();
+    Wb.recordClockInterval = setTimeout(WbUi.setClockInterval, Wb.sampleRate);
+  },
+
 };
 })();
