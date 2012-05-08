@@ -93,7 +93,7 @@ window.WbUi = {
    */
   init: function(canvasElement, elemconf) {
     this.canvasElement = canvasElement;
-    $("#xboard-container #slider").slider({animate: 200});
+    $("#xboard-container #slider").slider({});
     Wb.init(canvasElement.attr("id"));
     if (elemconf !== undefined) {
       for (var i in this.elementConf) {
@@ -166,6 +166,7 @@ window.WbUi = {
 
     $("#xboard-container #slider").slider({
       stop: function(event, ui) {
+        console.log("slider val: " + ui.value);
         Wb.jump(ui.value);
         if (WbUi.wasPlaying) {
           Wb.play();
@@ -364,7 +365,7 @@ window.WbUi = {
     // the current recording time because it means we are recording
     // and the total time is increasing
     //console.log("setclock: " + time);
-    if (!time){ // implies we are recording, so we update the max
+    if (typeof time === "undefined"){ // implies we are recording, so we update the max
       time = Wb.getRecordingTime();
       $("#xboard-container #slider").slider("option", "max", time);
     } else if (time > Wb.getRecordingTime()) {

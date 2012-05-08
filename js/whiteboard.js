@@ -204,7 +204,7 @@ window.Wb = {
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */
     setPlaybackClock: function(time){
-      if (time === undefined) {
+      if (typeof time === "undefined") {
         // if no explicit time passed in, increment the current playbackClock
         Wb.playbackClock += Wb.sampleRate;
       } else {
@@ -284,7 +284,7 @@ window.Wb = {
      * again by setting a timeout.
      */
     animateNext: function(delay) {
-      if (delay != undefined) {
+      if (!(typeof delay === "undefined")) {
         Wb.animateTimeout = setTimeout(Wb.animateNext);
       } else {
         if (Wb.animIndex === 0) {
@@ -298,6 +298,9 @@ window.Wb = {
         if (Wb.animIndex < Wb.events.length - 1) {
           var diffTime = Wb.events[Wb.animIndex].time - Wb.events[Wb.animIndex - 1].time;
           Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
+        } else {
+          // we've reached the end, decrement back down
+          Wb.animIndex--;
         }
       }
     },
@@ -310,6 +313,7 @@ window.Wb = {
       clearTimeout(Wb.playbackClockTimeout);
       Wb.setPlaybackClock(time);
       if (Wb.isPlaying) {
+        alert("x");
         Wb.animateNext(Wb.events[Wb.animIndex].time - time);
       }
     },
@@ -335,6 +339,7 @@ window.Wb = {
 
         // only animate if we haven't played all the events yet
         if (!Wb.eventsEnd()){
+          console.log("Ind: " + Wb.animIndex + " End: " + Wb.events.length);
           Wb.animateNext(Wb.events[Wb.animIndex].time - Wb.playbackClock);
         }
       }
@@ -433,16 +438,17 @@ window.Wb = {
      * a binary search over the events?
     */
     redraw: function(time) {
-      console.log("redraw time: " + time);
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       for (Wb.animIndex = 0; Wb.animIndex < Wb.events.length; Wb.animIndex++) {
-        if (time && Wb.events[Wb.animIndex].time > time) {
+        if (!(typeof time === "undefined") && Wb.events[Wb.animIndex].time >= time) {
           // this will be the next animation we start with
-          break;
+          return;
         } else {
           Wb.execute(Wb.events[Wb.animIndex]);
         }
       }
+      // Decrement if we went through the whole loop, keep in bounds
+      Wb.animIndex--;
     },
 
      /**

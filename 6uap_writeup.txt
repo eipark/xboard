@@ -80,8 +80,7 @@ IMPROVEMENTS
 - clean up code
 
 // CURR BUGS
-- playback at beginning or end
-- record, draw. pause record. record. playback to middle
-- new color picker
+- new color picker with presets
+- disable recording (cursor, unbind everything on board) on playback
 
 
