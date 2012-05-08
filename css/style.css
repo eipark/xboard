@@ -18,6 +18,7 @@ div#tools {
   width: 78px;
   border: 1px solid #000;
   border-right: none;
+  
 }
 
 div#drawsection {
@@ -131,10 +132,22 @@ button#play_pause{
 
 
 /* Cursors */
-.pencil_active {cursor: url(), auto;}
-.eraser_active {cursor: url(), auto;}
+.pencil_active {cursor: url("img/square_5x5.png"), auto;}
+.eraser_active {cursor: url("img/square_10x10.png"), auto;}
 
 /* Slider */
 .ui-slider-handle {
   outline: none;
 }
+
+/* Tool panel
+-------------------------------*/
+
+/* color picker*/
+#color_selector {
+  width: 33px;
+  height: 33px;
+  background: url("img/select2.png");
+  background-color: #000;
+}
+

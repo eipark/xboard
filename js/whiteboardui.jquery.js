@@ -1,19 +1,37 @@
 /**
  * UI for HTML5 Canvas Wb
- * 
+ *
  * Authors:
  * Antti Hukkanen
  * Kristoffer Snabb
- * 
+ *
  * Aalto University School of Science and Technology
  * Course: T-111.2350 Multimediatekniikka / Multimedia Technology
- * 
+ *
  * Under MIT Licence
- * 
+ *
  */
 
 $(document).ready(function(){
   WbUi.init($("canvas"));
+
+  $('#color_selector').ColorPicker({
+    color: '#000',
+    onShow: function (colpkr) {
+      $(colpkr).fadeIn(200);
+      return false;
+    },
+    onHide: function (colpkr) {
+      $(colpkr).fadeOut(200);
+      // this is hacky, but the onsubmit requires a button press
+      // we just want the color set when you exit the color picker
+      Wb.setStrokeStyle($("#color_selector").css("backgroundColor"));
+      return false;
+    },
+    onChange: function (hsb, hex, rgb) {
+      $('#color_selector').css('backgroundColor', '#' + hex);
+    }
+  });
 });
 
 (function() {
@@ -30,7 +48,7 @@ function readableTime(ms) {
 }
 
 window.WbUi = {
-  
+
   canvasElement: null, // jQuery element for canvas
 
   wasPlaying: false, // cues whether to continue playback when slider stops
@@ -42,7 +60,7 @@ window.WbUi = {
    * If names or classes have different names, they
    * should be defined in the script initialization,
    * that is WbUi.init() function.
-   * 
+   *
    * The purpose of this list is only to show what
    * element definitions this scripts uses.
    */
@@ -50,7 +68,7 @@ window.WbUi = {
     // Classes
     pencil_active:    null,
     eraser_active:    null,
-    
+
     // Element ids
     button_pencil:    null,
     button_color:   null,
@@ -64,7 +82,7 @@ window.WbUi = {
 
   /**
    * Initializes the Wb UI script.
-   * 
+   *
    * @param canvasElement The canvas jQuery element.
    * @param elemconf The element configuration array.
    * This array can contain any of the elements defined
@@ -86,18 +104,18 @@ window.WbUi = {
     }
     this.addListeners();
   },
-  
+
   /**
    * Resolves the element name from WbUi.elemConf.
    * If index defined by ind parameter can be found in that
    * array and the array's value is returned. Otherwise
    * the ind parameter itself is returned.
-   * 
+   *
    * @param ind The element's index name in WbUi.elemConf
    * @return The elements correct name
    */
   getElementName: function(ind) {
-    if (WbUi.elementConf[ind] === undefined || 
+    if (WbUi.elementConf[ind] === undefined ||
         WbUi.elementConf[ind] === null) {
       return ind;
     }
@@ -122,11 +140,7 @@ window.WbUi = {
    */
   addListeners: function() {
     WbUi.getElement('button_pencil').mousedown(function() {
-      Wb.setStrokeStyle(WbUi.getElement('input_color').attr("value"));
       WbUi.activatePencil();
-    });
-    WbUi.getElement('button_color').mousedown(function() {
-      Wb.setStrokeStyle(WbUi.getElement('input_color').attr("value"));
     });
     WbUi.getElement('button_eraser').mousedown(WbUi.activateEraser);
     WbUi.getElement('button_animate').mousedown(Wb.animate);
@@ -187,14 +201,20 @@ window.WbUi = {
   // Changes recording button and disables buttons not appropriate
   // for recording state.
   record: function(elt) {
-    $("button#play_pause").attr("disabled", true);
     $("#slider").slider("disable");
+    $("button#play_pause").attr("disabled", true);
+    $("button#button_pencil").attr("disabled", false);
+    $("button#button_eraser").attr("disabled", false);
+    $("#recorder").html("Pause");
     Wb.record();
   },
 
   pauseRecord: function() {
     $("button#play_pause").attr("disabled", false);
+    $("button#button_pencil").attr("disabled", true);
+    $("button#button_eraser").attr("disabled", true);
     $("#slider").slider("enable");
+    $("#recorder").html("Record");
     Wb.pauseRecord();
   },
 
@@ -213,9 +233,9 @@ window.WbUi = {
   /**
    * Resolves the X coordinate of the given event inside
    * the canvas element.
-   * 
+   *
    * @param event The event that has been executed.
-   * @return The x coordinate of the event inside the 
+   * @return The x coordinate of the event inside the
    * canvas element.
    */
   getX: function(event) {
@@ -224,13 +244,13 @@ window.WbUi = {
       var canvasx = cssx * xrel;
       return canvasx;
   },
-  
+
   /**
    * Resolves the Y coordinate of the given event inside
    * the canvas element.
-   * 
+   *
    * @param event The event that has been executed.
-   * @return The y coordinate of the event inside the 
+   * @return The y coordinate of the event inside the
    * canvas element.
    */
   getY: function(event) {
@@ -239,7 +259,7 @@ window.WbUi = {
       var canvasy = cssy * yrel;
       return canvasy;
   },
-  
+
   /**
    * Returns the canvas element to its default definition
    * without any extra classes defined by any of the selected
@@ -250,11 +270,11 @@ window.WbUi = {
     WbUi.canvasElement.removeClass(WbUi.getElementName('pencil_active'));
     WbUi.canvasElement.removeClass(WbUi.getElementName('eraser_active'));
   },
-  
+
   /**
    * Activates pencil tool and adds pencil_active class
    * to canvas element.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */
@@ -268,7 +288,7 @@ window.WbUi = {
    * Begins the pencil draw after user action that is usually
    * mouse down. This should be executed on mousedown event
    * after activating the pen tool.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */
@@ -285,7 +305,7 @@ window.WbUi = {
    * Ends pencil draw which means that mouse moving won't
    * be registered as drawing action anymore. This should be
    * executed on mouseup after user has started drawing.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */
@@ -294,11 +314,11 @@ window.WbUi = {
     WbUi.canvasElement.unbind("mouseup");
     WbUi.canvasElement.unbind("mouseout");
   },
-  
+
   /**
    * Activates erasing tool and adds eraser_active class
    * to canvas element.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */
@@ -312,7 +332,7 @@ window.WbUi = {
    * Begins the erasing action after user action that is usually
    * mouse down. This should be executed on mousedown event
    * after activating the erasing tool.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */
@@ -324,7 +344,7 @@ window.WbUi = {
       WbUi.canvasElement.bind("mouseup", WbUi.endErasing);
       WbUi.canvasElement.bind("mouseout", WbUi.endErasing);
   },
-  
+
   /**
    * Ends erasing which means that mouse moving won't
    * be registered as erasing action anymore. This should be
@@ -344,7 +364,7 @@ window.WbUi = {
     // if time is passed in, we use it, otherwise we just set it to
     // the current recording time because it means we are recording
     // and the total time is increasing
-    console.log("setclock: " + time);
+    //console.log("setclock: " + time);
     if (!time){ // implies we are recording, so we update the max
       time = Wb.getRecordingTime();
       $("#xboard-container #slider").slider("option", "max", time);

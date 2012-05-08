@@ -49,12 +49,16 @@ how timing works
 - when scrub to start of video, it jumps to end and back
 - stop playback when we have grabbed the handle
 
+BAD BUG:
+- connecting paths when jumping around becasue path doesnt get closed
+
 IMPROVEMENTS
 
 - something like backbone.js
 
 
 // TODO
+- moving playback to beginning locks up.
 - fix stroke bug
 - tooltip on changing slider
 - remove slider JS clutter
@@ -63,6 +67,8 @@ IMPROVEMENTS
 - stroke size
 - color
 - eraser size
+- jump to end when move to start
+- redo stroke color at beginning
 
 - style
 
@@ -73,6 +79,6 @@ IMPROVEMENTS
 - better comments
 - clean up code
 
-- 
+-
 
 

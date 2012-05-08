@@ -59,8 +59,8 @@ function DrawPathToPoint(x, y) {
 function Erase(x, y) {
   this.type = "erase";
   this.coordinates = [x, y];
-  this.height = 5;
-  this.width = 5;
+  this.height = 10;
+  this.width = 10;
   this.time = Wb.getRecordingTime();
 }
 /* Stroke style event 
@@ -70,10 +70,10 @@ function Erase(x, y) {
 function StrokeStyle(color) {
   this.type = "strokestyle";
   this.color = color;
+  console.log("Color: " + color);
   if (Wb.recording) {
     this.time = Wb.getRecordingTime();
   } else {
-    console.log("Stroke, not recording");
     this.time = Wb.lastEndTime;
   }
 }
@@ -124,7 +124,7 @@ window.Wb = {
 
       //initial values for the drawing context
       this.context.lineWidth = 5;
-      this.context.lineCap = "round";
+      this.context.lineCap = "square";
 
       // Initialize the selected color
       var col = this.drawColor;
@@ -151,7 +151,7 @@ window.Wb = {
 
       // Only push and save if we're recording... otherwise we're
       // just replaying  an action and don't need to save it.
-      if(Wb.recording) {
+      if(Wb.recording || (!Wb.isPlaying && type == "strokestyle")) {
           Wb.events.push(wbevent);
       }
 
@@ -178,6 +178,8 @@ window.Wb = {
     },
 
     record: function(){
+      // if in middle of playback and you record, go back to the end of the
+      // recording, only supporting appending for records
       if (!Wb.playbackEnd()) {
         console.log("shouldve redrawn");
         Wb.redraw();
@@ -265,7 +267,9 @@ window.Wb = {
       Wb.setPlaybackClock(0);
       Wb.animationIndex = 0;
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      Wb.animateNext();
+      if (Wb.events.length > 0) {
+        Wb.animateTimeout = setTimeout(Wb.animateNext, Wb.events[0].time);
+      }
     },
 
     /**
@@ -274,7 +278,7 @@ window.Wb = {
      * current and next event before calling itself again.
      */
     animateNext: function() {
-      if (Wb.animationIndex === 0) {
+      /*if (Wb.animationIndex === 0) {
         Wb.animateTimeout = setTimeout(function(){
           Wb.execute(Wb.events[0]);
           Wb.animationIndex++;
@@ -282,14 +286,19 @@ window.Wb = {
       } else {
         Wb.execute(Wb.events[Wb.animationIndex]);
         Wb.animationIndex++;
-      }
-      Wb.animateNextAfterDelay(Wb.events[Wb.animationIndex].time);
+      }*/
+      Wb.execute(Wb.events[Wb.animationIndex]);
+      Wb.animateNextAfterDelay();
     },
 
     animateNextAfterDelay: function(time) {
       if (Wb.animationIndex < Wb.events.length - 1) {
+        if (time === undefined) {
+          time = Wb.events[Wb.animationIndex].time;
+        }
         var diffTime = Wb.events[Wb.animationIndex + 1].time - time;
         Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
+        Wb.animationIndex++;
       }
     },
 
@@ -378,7 +387,7 @@ window.Wb = {
 
     /**
      * Begins erasing path.
-     * 
+     *
      * @param x Coordinate x of the path starting point
      * @param y Coordinate y of the path starting point
      */
@@ -406,10 +415,18 @@ window.Wb = {
      * This function redraws the entire canvas
      * according to the events in events.
      * If a time is specified it only redraws up to that point
+     * TODO: If we are jumping to a time in the future from current playback
+     * we optimize the redraw by not refreshing the entire canvas.
     */
     redraw: function(time) {
-        //this.init();
-        console.log("---in redraw");
+      //this.init();
+      if (time < Wb.playbackClock) {
+        console.log("Closing Path");
+        //Wb.context.closePath();
+      } else {
+      }
+
+      console.log("---in redraw");
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
       for(var i = 0; i < Wb.events.length; i++) {
         if (time && Wb.events[i]["time"] > time) {
@@ -430,22 +447,11 @@ window.Wb = {
        * @param color The wanted stroke color
       */
     setStrokeStyle: function(color) {
-     if (color != Wb.drawColor) {
+    if (color != Wb.drawColor) {
         var e = new StrokeStyle(color);
         Wb.execute(e);
       }
     },
-
-    /**
-     * This removes the last event from this events 
-     * and redraws (it can be made more 
-     * effective then to redraw but time is limited)
-    */
-    undo: function() {
-      reverseEvent = Wb.events.pop();
-      console.log(reverseEvent.type);
-      Wb.redraw();
-    }
 
     /* === END ACTIONS === */
 

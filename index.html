@@ -6,22 +6,20 @@
     <link rel="stylesheet" type="text/css" href="css/reset.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.19.custom.css" />
-  <script src="js/libs/jquery-1.7.2.min.js" type="application/javascript"></script>
-  <script src="js/libs/jquery-ui-1.8.19.custom.js" type="application/javascript"></script>
-  <script src="js/whiteboard.js" type="application/javascript"></script>
-  <script src="js/whiteboardui.jquery.js" type="application/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="css/colorpicker.css" />
+    <script src="js/libs/jquery-1.7.2.min.js" type="application/javascript"></script>
+    <script src="js/libs/jquery-ui-1.8.19.custom.js" type="application/javascript"></script>
+    <script src="js/whiteboard.js" type="application/javascript"></script>
+    <script src="js/whiteboardui.jquery.js" type="application/javascript"></script>
+    <script src="js/libs/colorpicker.min.js"></script>
 </head>
 <body>
 <div id="xboard-container">
     <div id="top-row" class="clearfix">
       <div id="tools">
-          <button id="button_pencil" type="button" id="drawpolyline">pencil</button>
-          <input id="input_color" type="text" name="color" size="7" value="#000000" maxlength="7" />
-          <button id="button_color" type="button">choose color</button>
-          <button id="button_eraser" type="button">eraser</button>
-          <button id="button_animate" type="button">animate</button>
-          <button id="button_undo" type="button">undo</button>
-
+          <button id="button_pencil" type="button" id="drawpolyline" disabled="disabled">pencil</button>
+          <button id="button_eraser" type="button" disabled="disabled">eraser</button>
+          <div id="color_selector"></div>
       </div> <!-- /tools -->
       <div id="drawsection">
         <canvas id="canvas"></canvas>
