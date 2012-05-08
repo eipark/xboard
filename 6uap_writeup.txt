@@ -35,7 +35,7 @@ how timing works
 - we assume that the redraw is fast enough, (show performance metric?)
 - binary search over times to find closest event?
 - a level of non-precision, but happens quick enough it seems like we can ignore it at this scale assuming a decently modern browser/computer...
-
+- clear all option
 
 
 - BIG STATE MACHINE of events, actions, etc. 

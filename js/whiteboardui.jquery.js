@@ -171,7 +171,6 @@ window.WbUi = {
           Wb.play();
           WbUi.wasPlaying = false;
         }
-        console.log("xxxxxxxxxx --- stop");
       }
     });
 
@@ -190,7 +189,6 @@ window.WbUi = {
   },
 
   playPauseToggle: function() {
-    console.log("--- playpausetoggle");
     WbUi.toggler($("#play_pause"), "is_playing", WbUi.pause, WbUi.play);
   },
 
@@ -310,6 +308,7 @@ window.WbUi = {
    * this action
    */
   endPencilDraw: function (event) {
+    Wb.endPencilDraw();
     WbUi.canvasElement.unbind("mousemove");
     WbUi.canvasElement.unbind("mouseup");
     WbUi.canvasElement.unbind("mouseout");

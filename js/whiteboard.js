@@ -48,6 +48,7 @@ function BeginPath(x, y) {
 function ClosePath() {
   this.type = "closepath";
   this.time = Wb.getRecordingTime();
+  console.log("Close path: "+this.time);
 }
 /* Point draw event */
 function DrawPathToPoint(x, y) {
@@ -63,7 +64,7 @@ function Erase(x, y) {
   this.width = 10;
   this.time = Wb.getRecordingTime();
 }
-/* Stroke style event 
+/* Stroke style event
    Don't want this to take up time, so we set it as last
    event before recording ended. Delays should only be on
    drawing events */
@@ -155,6 +156,7 @@ window.Wb = {
           Wb.events.push(wbevent);
       }
 
+      console.log("ind: " + Wb.animationIndex);
       if(type === "beginpath") {
           this.context.beginPath();
           this.context.moveTo(wbevent.coordinates[0],
@@ -336,7 +338,6 @@ window.Wb = {
         Wb.setPlaybackClock();
         Wb.animateNextAfterDelay(Wb.playbackClock);
       }
-      console.log("--- playing");
     },
 
     /**
@@ -369,8 +370,13 @@ window.Wb = {
      * @param y Coordinate y of the path starting point
      */
     beginPencilDraw: function(x, y) {
-        var e = new BeginPath(x, y);
-        Wb.execute(e);
+      var e = new BeginPath(x, y);
+      Wb.execute(e);
+    },
+
+    endPencilDraw: function(){
+      var e = new ClosePath();
+      Wb.execute(e);
     },
 
     /**
@@ -419,24 +425,29 @@ window.Wb = {
      * we optimize the redraw by not refreshing the entire canvas.
     */
     redraw: function(time) {
-      //this.init();
       if (time < Wb.playbackClock) {
-        console.log("Closing Path");
-        //Wb.context.closePath();
+        // we need to reinitialize the canvas state if we're going back in time
+        // so that any current state doesn't corrupt how we re-draw up to a previous
+        // state
+        console.log("initing");
+        this.init("canvas");
       } else {
       }
 
       console.log("---in redraw");
       Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
+      var debug = "";
       for(var i = 0; i < Wb.events.length; i++) {
         if (time && Wb.events[i]["time"] > time) {
           // this will be the next animation we start with
           Wb.animationIndex = i;
           break;
         } else {
+          debug = debug + " " + i;
           this.execute(Wb.events[i]);
         }
       }
+      console.log(debug);
     },
 
      /**
