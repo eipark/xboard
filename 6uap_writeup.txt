@@ -79,8 +79,10 @@ IMPROVEMENTS
 - better comments
 - clean up code
 
+- loading image?
+
 // CURR BUGS
 - new color picker with presets
 - disable recording (cursor, unbind everything on board) on playback
-
+- change handlers to mouseUp?
 

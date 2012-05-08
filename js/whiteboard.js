@@ -430,7 +430,8 @@ window.Wb = {
     /**
      * This function redraws the entire canvas
      * according to the events in events.
-     * If a time is specified it only redraws up to that point
+     * If a time is specified it only redraws up to that point. Otherwise it
+     * redraws the entire canvas.
      * TODO: If we are jumping to a time in the future from current playback
      * we optimize the redraw by not refreshing the entire canvas.
      * TODO: Rather than check condition every time in the loop, optimize
@@ -438,17 +439,32 @@ window.Wb = {
      * a binary search over the events?
     */
     redraw: function(time) {
-      Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      for (Wb.animIndex = 0; Wb.animIndex < Wb.events.length; Wb.animIndex++) {
-        if (!(typeof time === "undefined") && Wb.events[Wb.animIndex].time >= time) {
-          // this will be the next animation we start with
-          return;
-        } else {
+
+      // Only redraw the entire board if we're going backwards from our current state
+      if (!(typeof time === "undefined" || time >= Wb.playbackClock)) {
+        Wb.animIndex = 0;
+        Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
+      }
+      // This code is verbose, but better for performance by reducing the number
+      // of conditions checked in the loop
+      if (typeof time === "undefined") {
+        for (Wb.animIndex; Wb.animIndex < Wb.events.length; Wb.animIndex++){
           Wb.execute(Wb.events[Wb.animIndex]);
         }
+      } else { //redraw only up to time
+        for (Wb.animIndex; Wb.animIndex < Wb.events.length; Wb.animIndex++){
+          if (Wb.events[Wb.animIndex].time >= time){
+            break;
+          } else {
+            Wb.execute(Wb.events[Wb.animIndex]);
+          }
+        }
       }
-      // Decrement if we went through the whole loop, keep in bounds
-      Wb.animIndex--;
+
+      // If we got to the end, our animIndex is out of bounds now, decrement
+      if (Wb.animIndex == Wb.events.length) {
+        Wb.animIndex--;
+      }
     },
 
      /**
