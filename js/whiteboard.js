@@ -408,7 +408,7 @@ window.Wb = {
      * into account but erases a rectangle at the given
      * coordinates with width and height specified in the
      * Erase object.
-     * 
+     *
      * @param x Coordinate x of the path ending point
      * @param y Coordinate y of the path ending point
      */
@@ -459,6 +459,7 @@ window.Wb = {
      * @param color The wanted stroke color
     */
     setStrokeStyle: function(color) {
+      console.log(color);
       var e = new StrokeStyle(color);
       Wb.execute(e);
     },

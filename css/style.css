@@ -73,6 +73,10 @@ button#play_pause{
   outline: 1px solid black;
 }
 
+#canvas:hover{
+  cursor: 
+}
+
 div#loader {
   width: 35px;
   height: 35px;
@@ -156,11 +160,34 @@ div#loader {
 /* Tool panel
 -------------------------------*/
 
-/* color picker*/
-#color_selector {
-  width: 33px;
-  height: 33px;
-  background: url("img/select2.png");
-  background-color: #000;
+/* Color Picker*/
+div.colorPicker-picker {
+  height: 25px;
+  width: 25px;
+  padding: 0 !important;
+  border: 1px solid #999;
+  background: url("img/arrow.gif") no-repeat bottom right;
+  cursor: pointer;
+  line-height: 16px;
 }
 
+div.colorPicker-palette {
+  width: 110px;
+  position: absolute;
+  border: 1px solid #598FEF;
+  background-color: #EFEFEF;
+  padding: 2px;
+}
+  div.colorPicker_hexWrap {width: 100%; float:left }
+  div.colorPicker_hexWrap label {font-size: 95%; color: #2F2F2F; margin: 5px 2px; width: 25%}
+  div.colorPicker_hexWrap input {margin: 5px 2px; padding: 0; font-size: 95%; border: 1px solid #000; width: 65%; }
+
+div.colorPicker-swatch {
+  height: 12px;
+  width: 12px;
+  border: 1px solid #000;
+  margin: 2px;
+  float: left;
+  cursor: pointer;
+  line-height: 12px;
+}

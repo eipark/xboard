@@ -11,7 +11,7 @@
     <script src="js/libs/jquery-ui-1.8.19.custom.js" type="application/javascript"></script>
     <script src="js/whiteboard.js" type="application/javascript"></script>
     <script src="js/whiteboardui.jquery.js" type="application/javascript"></script>
-    <script src="js/libs/colorpicker.min.js"></script>
+    <script src="js/libs/jquery.colorPicker.min.js" type="text/javascript"></script>
 </head>
 <body>
 <div id="xboard-container">
@@ -19,7 +19,7 @@
       <div id="tools">
           <button id="button_pencil" type="button" id="drawpolyline" disabled="disabled">pencil</button>
           <button id="button_eraser" type="button" disabled="disabled">eraser</button>
-          <div id="color_selector"></div>
+          <div><input id="color_picker" type="text" value="#000000" disabled="disabled" /></div>
       </div> <!-- /tools -->
       <div id="drawsection">
         <canvas id="canvas">

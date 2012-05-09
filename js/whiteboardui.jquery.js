@@ -1,20 +1,6 @@
-/**
- * UI for HTML5 Canvas Wb
- *
- * Authors:
- * Antti Hukkanen
- * Kristoffer Snabb
- *
- * Aalto University School of Science and Technology
- * Course: T-111.2350 Multimediatekniikka / Multimedia Technology
- *
- * Under MIT Licence
- *
- */
-
 $(document).ready(function(){
   WbUi.init($("canvas"));
-
+/*
   $('#color_selector').ColorPicker({
     color: '#000',
     onShow: function (colpkr) {
@@ -31,7 +17,13 @@ $(document).ready(function(){
     onChange: function (hsb, hex, rgb) {
       $('#color_selector').css('backgroundColor', '#' + hex);
     }
-  });
+  });*/
+
+  $("#color_picker").colorPicker({pickerDefault: "000000"});
+    $(".colorPicker-swatch").click(function(){
+      console.log("xx");
+      Wb.setStrokeStyle($(this).css("background-color"));
+    });
 });
 
 (function() {
@@ -147,6 +139,7 @@ window.WbUi = {
     WbUi.getElement('recorder').mousedown(WbUi.recordToggle);
     WbUi.getElement('button_undo').mousedown(Wb.undo);
     WbUi.getElement('play_pause').mousedown(WbUi.playPauseToggle);
+
     //remove onmousedown from html and make this work
 
     $("#xboard-container #slider").slider({
