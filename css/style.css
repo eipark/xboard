@@ -27,15 +27,7 @@ div#drawsection {
   height: 400px;
 }
 
-div#transcript{
-  width: 208px;
-  height: 400px;
-  border: 1px solid #000;
-  border-left: none;
-}
-
-
-div#tools, div#drawsection, div#transcript {
+div#tools, div#drawsection {
   float:left;
 }
 
