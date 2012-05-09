@@ -32,9 +32,8 @@
  * http://docs.jquery.com/UI/Slider#theming
  */
 .ui-slider { position: relative; text-align: left; background: #777; }
-.ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 15px; height: 15px; cursor: pointer; outline: none;}
+.ui-slider .ui-slider-handle { position: absolute; z-index: 2; width: 18px; height: 18px; cursor: pointer; outline: none; background: #933 url("img/slider-handle.png") center center no-repeat; border-radius: 15px; border: 1px solid #4D1919; box-shadow: inset 0 1px 0 #bf4040}
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; display: block; background-position: 0 0; }
 
 .ui-slider-horizontal { height: 10px; }
-.ui-slider-horizontal .ui-slider-handle { top: -.3em; margin-left: -.6em; }
-.ui-slider-horizontal .ui-slider-range { top: 0; height: 100%; }
+.ui-slider-horizontal .ui-slider-handle { top: -4px; margin-left: -7px;}
