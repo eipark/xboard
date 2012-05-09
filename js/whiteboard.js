@@ -418,6 +418,18 @@ window.Wb = {
       // sync endtime/subtractTime
     },
 
+    genUniqueID: function() {
+      var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+      var len = 11;
+      var id = "";
+      var rand_no;
+      for (var i = 0; i < len; i++){
+        rand = Math.floor(Math.random() * chars.length);
+        id += chars.substring(rand, rand + 1);
+      }
+      return id;
+    },
+
     /* calls set clock every x milliseconds for when playing back
        need to use this instead of getRecordingTime since events
        don't happen in regular intervals so we need a regular clock update */

@@ -87,7 +87,6 @@ https://github.com/WebReflection/JSONH
 - cjson http://stevehanov.ca/blog/index.php?id=104, JSONH had difficulties with nesting of objects
 
 // CURR BUGS
-- new color picker with presets
 - disable recording (cursor, unbind everything on board) on playback
 - change handlers to mouseUp?
 
@@ -95,3 +94,5 @@ https://github.com/WebReflection/JSONH
 // want an embed like youtube for playback. based in an iframe. but for recording, need the full code to embe
 
 http://laktek.com/2008/10/27/really-simple-color-picker-in-jquery/
+
+- generating unique URL, 11 string random
