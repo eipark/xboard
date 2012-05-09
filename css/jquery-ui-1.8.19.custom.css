@@ -36,4 +36,4 @@
 .ui-slider .ui-slider-range { position: absolute; z-index: 1; display: block; background-position: 0 0; }
 
 .ui-slider-horizontal { height: 10px; }
-.ui-slider-horizontal .ui-slider-handle { top: -4px; margin-left: -7px;}
+.ui-slider-horizontal .ui-slider-handle { top: -5px; margin-left: -7px;}
