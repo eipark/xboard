@@ -177,14 +177,14 @@ window.WbUi = {
   record: function(elt) {
     $("#slider").slider("disable");
     $("button#play_pause").attr("disabled", true);
-    $("#recorder").html("Pause");
+    $("#drawsection").addClass("is_recording");
     Wb.record();
   },
 
   pauseRecord: function() {
     $("button#play_pause").attr("disabled", false);
     $("#slider").slider("enable");
-    $("#recorder").html("Record");
+    $("#drawsection").removeClass("is_recording");
     Wb.pauseRecord();
   },
 

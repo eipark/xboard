@@ -9,6 +9,11 @@
   clear: both;
 }
 
+div#xboard-container {
+  font-family: Arial;
+  font-size: 12px;
+}
+
 div#top-row{
   width: 880px;
   height: 400px;
@@ -18,54 +23,29 @@ div#tools {
   width: 78px;
   border: 1px solid #000;
   border-right: none;
-  
 }
 
 div#drawsection {
-  border: 1px solid black;
+  border: 1px solid #000;
   width: 578px;
   height: 400px;
+}
+
+div#drawsection.is_recording{
+  border: 1px solid red;
 }
 
 div#tools, div#drawsection {
   float:left;
 }
 
-div#bottom-row{
-  margin-left: 79px;
-  margin-top: 1px;
-  border: 1px solid #000;
-  border-top: none;
-  height: 50px;
-  width: 578px;
-}
-
-button#play_pause{
-  display:inline-block;
-}
-
-.is_recording{
-  background: red;
-}
-
-.is_playing {
-  background: blue;
-}
-
-
 #canvas-container {
   /*overflow: scroll;*/
 }
-#drawsection{
 
-  position: relative;
-}
+
 #canvas {
   height: 100%; width: 100%;
-  outline: 1px solid black;
-}
-
-#canvas:hover{
 }
 
 div#loader {
@@ -79,77 +59,97 @@ div#loader {
   display:none;
 }
 
-#shape_menu, #saveas_menu {
-  display: none;
-  position: absolute;
-  border: 1px solid;
-  width: 200px;
-  height: 100px;
-  background-color: #ffffff;
-  padding: 5px;
-}
-
-#zoom_element {
-  z-index: 100;
-  display: none;
-  position: absolute;
-  top: 25%;
-  right: 0;
-  width: 50px;
-  height: 50%;
-  border: 1px solid #cccccc;
-}
-
-#zoom_element #zoom_amount {
-  position: absolute;
-  margin-top: -21px;
-  height: 20px;
-  width: 100%;
-  text-align: center;
-  background-color: #ffffff;
-}
-
-#zoom_element #zoom_section {
-  position: absolute;
-  background-color: #ffffff;
-  width: 50px;
-  height: 100%;
-}
-
-#zoom_element #zoom_section #zoom_bar {
-  position: absolute;
-  margin-left: 20px;
-  width: 10px;
-  height: 100%;
-  background-color: #cccccc;
-}
-
-#zoom_element #zoom_section #zoom_slider {
-  z-index: 105;
-  position: absolute;
-  margin: 0 auto;
-  bottom: 0;
-  width: 50px;
-  height: 20px;
-  background-color: #000000;
-  cursor: move;
-}
-
-#recorder {
-}
-
-
 /* Cursors */
 .pencil_active {cursor: url("img/square_5x5.png"), auto;}
 .eraser_active {cursor: url("img/square_10x10.png"), auto;}
 
-/* Slider */
-.ui-slider-handle {
-  outline: none;
+/* Bottom Row
+-------------------------------*/
+div#bottom-row{
+  margin-left: 79px;
+  margin-top: 1px;
+  border: 1px solid #000;
+  border-top: none;
+  height: 45px;
+  width: 578px;
+  color: #FFF;
 }
 
-/* Tool panel
--------------------------------*/
+div#controls{
+  background: #595959; /* Old browsers */
+  background: -moz-linear-gradient(top, #595959 0%, #000000 99%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#595959), color-stop(99%,#000000)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #595959 0%,#000000 99%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #595959 0%,#000000 99%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #595959 0%,#000000 99%); /* IE10+ */
+  background: linear-gradient(top, #595959 0%,#000000 99%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#595959', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  position: relative;
+}
+
+div#controls:hover {
+}
+
+div#elapsed_timer, div#time_separator, div#total_timer, div#play_pause, div#recorder{
+  float:left;
+}
+
+div#recorder{
+  position: absolute;
+  left: 43%;
+  border-right: 1px solid #999;
+  border-left: 1px solid #999;
+  padding: 7px 10px;
+  height: 14px;
+  width: 35px;
+  background: url("img/record-icon.png") center center no-repeat;
+  opacity: 0.7;
+}
+
+div#recorder:hover{
+  cursor:pointer;
+  background: url("img/record-icon.png") center center no-repeat;
+  opacity: 1.0;
+}
+
+div#recorder.is_recording{
+  background: url("img/stop-recording-icon.png") center center no-repeat;
+  opacity: 1.0;
+}
+
+div.timing{
+  padding: 7px 0px;
+}
+
+div#time_separator{
+  margin: 0 3px;
+  height: 100%;
+}
+
+div#elapsed_timer{
+  border-left: 1px solid #999;
+  padding-left: 10px;
+}
+div#total_timer, div#time_separator {
+  color: #999;
+}
+
+div#play_pause {
+  width: 50px;
+  height: 29px;
+  background: url("img/play-icon.png")  center center no-repeat;
+  opacity: 0.7;
+}
+
+div#play_pause:hover {
+  cursor: pointer;
+  opacity: 1.0;
+}
+
+div#play_pause.is_playing {
+  background: url("img/pause-icon.png") center center no-repeat;
+}
+
 
 /* Color Picker*/
 div.colorPicker-picker {

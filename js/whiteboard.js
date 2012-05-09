@@ -389,7 +389,9 @@ window.Wb = {
       console.log(color);
       var e = new StrokeStyle(color);
       Wb.execute(e);
-      // always push changes in stroke style if not playing
+      // Always push changes in stroke style if not playing
+      // Push here, not in execute, because then redraw would
+      // be pushing StrokeStyle events into Wb.events.
       if (!Wb.isPlaying) {
         Wb.events.push(e);
       }
