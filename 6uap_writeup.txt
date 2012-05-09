@@ -71,6 +71,7 @@ IMPROVEMENTS
 - redo stroke color at beginning
 - firefox timeout http://benalman.com/news/2009/07/the-mysterious-firefox-settime/
 - style
+- need some sort of authentication to be able to record
 
 - check save/load from JSON
 - compression http://web-resource-optimization.blogspot.com/2011/06/json-compression-algorithms.html
@@ -87,7 +88,6 @@ https://github.com/WebReflection/JSONH
 - cjson http://stevehanov.ca/blog/index.php?id=104, JSONH had difficulties with nesting of objects
 
 // CURR BUGS
-- disable recording (cursor, unbind everything on board) on playback
 - change handlers to mouseUp?
 
 
@@ -96,3 +96,4 @@ https://github.com/WebReflection/JSONH
 http://laktek.com/2008/10/27/really-simple-color-picker-in-jquery/
 
 - generating unique URL, 11 string random
+

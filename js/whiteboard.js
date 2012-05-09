@@ -139,7 +139,7 @@ window.Wb = {
       var tmp;
 
       // Only push and save if we're recording
-      if (Wb.recording || (!Wb.isPlaying && type == "strokestyle")){
+      if (Wb.recording || (!Wb.isPlaying && type == "s")){
         Wb.events.push(wbevent);
       }
 
