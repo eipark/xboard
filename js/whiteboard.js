@@ -25,30 +25,30 @@ function executeFunctionByName(functionName, context /*, args */) {
 
 /* Begin path event */
 function BeginPath(x, y) {
-  this.coordinates = [x, y];
-  this.type="beginpath";
+  this.coord = [x, y];
+  this.type="b";
   this.time = Wb.getRecordingTime();
   console.log("Begin path: "+this.time);
 }
 
 /* End path event */
 function ClosePath() {
-  this.type = "closepath";
+  this.type = "c";
   this.time = Wb.getRecordingTime();
   console.log("Close path: "+this.time);
 }
 
 /* Point draw event */
 function DrawPathToPoint(x, y) {
-  this.type = "drawpathtopoint";
-  this.coordinates = [x, y];
+  this.type = "d";
+  this.coord = [x, y];
   this.time = Wb.getRecordingTime();
 }
 
 /*Erase event */
 function Erase(x, y) {
-  this.type = "erase";
-  this.coordinates = [x, y];
+  this.type = "e";
+  this.coord = [x, y];
   this.height = 10;
   this.width = 10;
   this.time = Wb.getRecordingTime();
@@ -59,7 +59,7 @@ function Erase(x, y) {
    event before recording ended. Delays should only be on
    drawing events */
 function StrokeStyle(color) {
-  this.type = "strokestyle";
+  this.type = "s";
   this.color = color;
   console.log("Color: " + color);
   if (Wb.recording) {
@@ -82,7 +82,7 @@ window.Wb = {
     context: null,
     canvas: null,
     type: '',
-    coordinates: [0,0],
+    coord: [0,0],
     events: [],
     animIndex: 0, // next in queue
     recording: false,
@@ -143,85 +143,28 @@ window.Wb = {
         Wb.events.push(wbevent);
       }
 
-      if(type === "beginpath") {
+      if(type === "b") {
         this.context.beginPath();
-        this.context.moveTo(wbevent.coordinates[0],
-                       wbevent.coordinates[1]);
+        this.context.moveTo(wbevent.coord[0],
+                       wbevent.coord[1]);
         this.context.stroke();
-      } else if (type === "drawpathtopoint") {
-        this.context.lineTo(wbevent.coordinates[0],
-                       wbevent.coordinates[1]);
+      } else if (type === "d") {
+        this.context.lineTo(wbevent.coord[0],
+                       wbevent.coord[1]);
         this.context.stroke();
-      } else if (type === "closepath") {
+      } else if (type === "c") {
         this.context.closePath();
-      } else if(type === "strokestyle") {
+      } else if(type === "s") {
         this.context.strokeStyle = wbevent.color;
-      } else if (type === "erase") {
-        this.context.clearRect(wbevent.coordinates[0],
-                               wbevent.coordinates[1],
+      } else if (type === "e") {
+        this.context.clearRect(wbevent.coord[0],
+                               wbevent.coord[1],
                                wbevent.width,
                                wbevent.height);
         }
 
     },
 
-    record: function(){
-      // if in middle of playback and you record, go back to the end of the
-      // recording, only supporting appending for records
-      if (!Wb.playbackEnd()) {
-        Wb.redraw();
-      }
-      Wb.recording = true;
-      Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
-      console.log("record, subtractTime: "+ Wb.subtractTime);
-      WbUi.setClockInterval();
-    },
-
-    pauseRecord: function(){
-      console.log("Wb.pauseRecord ----------");
-      Wb.recording = false;
-      // keep track of this to make one smooth timeline even if we stop
-      // and start recording sporadically.
-      Wb.lastEndTime = new Date().getTime();
-      // playback clock should be same as recording time when we stop recording
-      Wb.playbackClock = Wb.getRecordingTime();
-      clearInterval(Wb.recordClockInterval);
-    },
-
-    /* calls set clock every x milliseconds for when playing back
-       need to use this instead of getRecordingTime since events
-       don't happen in regular intervals so we need a regular clock update */
-    setPlaybackClock: function(time){
-      if (typeof time === "undefined") {
-        // if no explicit time passed in, increment the current playbackClock
-        Wb.playbackClock += Wb.sampleRate;
-      } else {
-        Wb.playbackClock = time;
-      }
-
-      WbUi.setClock(Wb.playbackClock);
-
-      // set timeout if we're in play mode
-      if (Wb.isPlaying) {
-        // to make sure we stop at the end of playback
-        if (Wb.playbackClock < Wb.getRecordingTime()) {
-          Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
-        } else {
-          Wb.isPlaying = false;
-          Wb.playbackClock = Wb.getRecordingTime();
-          WbUi.playPauseToggle();
-        }
-      }
-
-    },
-
-    /* Gets the time elapsed in recording mode*/
-    getRecordingTime: function(){
-      if (Wb.recording) {
-        Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
-      }
-      return Wb.recordingTime;
-    },
 
     /**
      * Resolves the relative width and height of the canvas
@@ -324,32 +267,28 @@ window.Wb = {
       }
     },
 
-    /**
-     * Wrapper around drawing functions, we want to make sure
-     * recording is on first before anything gets executed.
-     */
-    canvasFunction: function(function_name, x, y){
-      if (Wb.recording) {
-        executeFunctionByName(function_name, Wb, x, y);
+
+    record: function(){
+      // if in middle of playback and you record, go back to the end of the
+      // recording, only supporting appending for records
+      if (!Wb.playbackEnd()) {
+        Wb.redraw();
       }
+      Wb.recording = true;
+      Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
+      console.log("record, subtractTime: "+ Wb.subtractTime);
+      WbUi.setClockInterval();
     },
 
-    jsonify: function(){
-      alert(Wb.events);
-      Wb.events = JSON.stringify(Wb.events);
-      alert(Wb.events);
-      Wb.events = JSON.parse(Wb.events);
-      alert(Wb.events);
-    },
-
-    // check if playback is at max time
-    playbackEnd: function(){
-      return Wb.playbackClock == Wb.getRecordingTime();
-    },
-
-    // check if all events have been played in playback
-    eventsEnd: function() {
-      return Wb.animIndex == (Wb.events.length - 1);
+    pauseRecord: function(){
+      console.log("Wb.pauseRecord ----------");
+      Wb.recording = false;
+      // keep track of this to make one smooth timeline even if we stop
+      // and start recording sporadically.
+      Wb.lastEndTime = new Date().getTime();
+      // playback clock should be same as recording time when we stop recording
+      Wb.playbackClock = Wb.getRecordingTime();
+      clearInterval(Wb.recordClockInterval);
     },
 
     /**
@@ -454,6 +393,75 @@ window.Wb = {
     },
 
     /* === END ACTIONS === */
+
+    /**
+     * Wrapper around drawing functions, we want to make sure
+     * recording is on first before anything gets executed.
+     */
+    canvasFunction: function(function_name, x, y){
+      if (Wb.recording) {
+        executeFunctionByName(function_name, Wb, x, y);
+      }
+    },
+
+    // Compresses event data using CJSON
+    save: function(){
+      CJSON.stringify(Wb.events);
+      // do we need to add extra information??
+      // gzip?
+    },
+
+    // Restores the state of the canvas from saved compressed data
+    restore: function(){
+      //Wb.events = CJSON.parse();
+      // set max slider time
+      // sync endtime/subtractTime
+    },
+
+    /* calls set clock every x milliseconds for when playing back
+       need to use this instead of getRecordingTime since events
+       don't happen in regular intervals so we need a regular clock update */
+    setPlaybackClock: function(time){
+      if (typeof time === "undefined") {
+        // if no explicit time passed in, increment the current playbackClock
+        Wb.playbackClock += Wb.sampleRate;
+      } else {
+        Wb.playbackClock = time;
+      }
+
+      WbUi.setClock(Wb.playbackClock);
+
+      // set timeout if we're in play mode
+      if (Wb.isPlaying) {
+        // to make sure we stop at the end of playback
+        if (Wb.playbackClock < Wb.getRecordingTime()) {
+          Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
+        } else {
+          Wb.isPlaying = false;
+          Wb.playbackClock = Wb.getRecordingTime();
+          WbUi.playPauseToggle();
+        }
+      }
+
+    },
+
+    /* Gets the time elapsed in recording mode*/
+    getRecordingTime: function(){
+      if (Wb.recording) {
+        Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
+      }
+      return Wb.recordingTime;
+    },
+
+    // check if playback is at max time
+    playbackEnd: function(){
+      return Wb.playbackClock == Wb.getRecordingTime();
+    },
+
+    // check if all events have been played in playback
+    eventsEnd: function() {
+      return Wb.animIndex == (Wb.events.length - 1);
+    },
 
     };
 })();

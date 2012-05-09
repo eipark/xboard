@@ -73,13 +73,18 @@ IMPROVEMENTS
 - style
 
 - check save/load from JSON
+- compression http://web-resource-optimization.blogspot.com/2011/06/json-compression-algorithms.html
+https://github.com/WebReflection/JSONH
 - make embeddable
 - switches for create/embed mode
 
 - better comments
 - clean up code
 
+- make type names shorter
 - loading image?
+
+- cjson http://stevehanov.ca/blog/index.php?id=104, JSONH had difficulties with nesting of objects
 
 // CURR BUGS
 - new color picker with presets
