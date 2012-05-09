@@ -1,29 +1,12 @@
 $(document).ready(function(){
   WbUi.init($("canvas"));
-/*
-  $('#color_selector').ColorPicker({
-    color: '#000',
-    onShow: function (colpkr) {
-      $(colpkr).fadeIn(200);
-      return false;
-    },
-    onHide: function (colpkr) {
-      $(colpkr).fadeOut(200);
-      // this is hacky, but the onsubmit requires a button press
-      // we just want the color set when you exit the color picker
-      Wb.setStrokeStyle($("#color_selector").css("backgroundColor"));
-      return false;
-    },
-    onChange: function (hsb, hex, rgb) {
-      $('#color_selector').css('backgroundColor', '#' + hex);
-    }
-  });*/
 
+  // Init color picker and set handler here since can only set
+  // click listener after it is init
   $("#color_picker").colorPicker({pickerDefault: "000000"});
-    $(".colorPicker-swatch").click(function(){
-      console.log("xx");
-      Wb.setStrokeStyle($(this).css("background-color"));
-    });
+  $(".colorPicker-swatch").click(function(){
+    Wb.setStrokeStyle($(this).css("background-color"));
+  });
 });
 
 (function() {
@@ -301,7 +284,7 @@ window.WbUi = {
    * this action
    */
   endPencilDraw: function (event) {
-    Wb.endPencilDraw();
+    Wb.canvasFunction("endPencilDraw");
     WbUi.canvasElement.unbind("mousemove");
     WbUi.canvasElement.unbind("mouseup");
     WbUi.canvasElement.unbind("mouseout");

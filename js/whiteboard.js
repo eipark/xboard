@@ -217,15 +217,6 @@ window.Wb = {
 
     },
 
-    checkRecordStatus: function(){
-      if (Wb.recording){
-        return true;
-      } else {
-        alert("You must begin recording before you start drawing");
-        return false;
-      }
-    },
-
     /* Gets the time elapsed in recording mode*/
     getRecordingTime: function(){
       if (Wb.recording) {
@@ -340,7 +331,7 @@ window.Wb = {
      * recording is on first before anything gets executed.
      */
     canvasFunction: function(function_name, x, y){
-      if (Wb.checkRecordStatus()) {
+      if (Wb.recording) {
         executeFunctionByName(function_name, Wb, x, y);
       }
     },
