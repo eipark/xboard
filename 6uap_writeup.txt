@@ -86,3 +86,5 @@ IMPROVEMENTS
 - disable recording (cursor, unbind everything on board) on playback
 - change handlers to mouseUp?
 
+
+// want an embed like youtube for playback. based in an iframe. but for recording, need the full code to embed.

@@ -1,34 +1,4 @@
-/**
- * HTML5 Canvas Wb
- * 
- * Authors:
- * Antti Hukkanen
- * Kristoffer Snabb
- * 
- * Aalto University School of Science and Technology
- * Course: T-111.2350 Multimediatekniikka / Multimedia Technology
- * 
- * Under MIT Licence
- * 
- */
-
 (function() {
-  
-/**
- * =============
- *    Helpers
- * =============
- */
-function executeFunctionByName(functionName, context /*, args */) {
-  var args = Array.prototype.slice.call(arguments, 2);
-  var namespaces = functionName.split(".");
-  var func = namespaces.pop();
-  for (var i = 0; i < namespaces.length; i++) {
-      context = context[namespaces[i]];
-  }
-  return context[func].apply(context, args);
-}
-
 /**
  * =============
  *     MODEL
@@ -44,12 +14,14 @@ function BeginPath(x, y) {
   this.time = Wb.getRecordingTime();
   console.log("Begin path: "+this.time);
 }
+
 /* End path event */
 function ClosePath() {
   this.type = "closepath";
   this.time = Wb.getRecordingTime();
   console.log("Close path: "+this.time);
 }
+
 /* Point draw event */
 function DrawPathToPoint(x, y) {
   this.type = "drawpathtopoint";
@@ -355,7 +327,7 @@ window.Wb = {
       }
     },
 
-    jsonit: function(){
+    jsonify: function(){
       alert(Wb.events);
       Wb.events = JSON.stringify(Wb.events);
       alert(Wb.events);

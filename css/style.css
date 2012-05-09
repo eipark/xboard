@@ -64,12 +64,25 @@ button#play_pause{
 #canvas-container {
   /*overflow: scroll;*/
 }
+#drawsection{
 
+  position: relative;
+}
 #canvas {
   height: 100%; width: 100%;
   outline: 1px solid black;
 }
 
+div#loader {
+  width: 35px;
+  height: 35px;
+  border: 1px solid #000;
+  position: relative;
+  left: 50%;
+  top: 50%;
+  background: url("img/loader.gif");
+  display:none;
+}
 
 #shape_menu, #saveas_menu {
   display: none;
