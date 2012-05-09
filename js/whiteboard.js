@@ -65,7 +65,7 @@ function StrokeStyle(color) {
   if (Wb.recording) {
     this.time = Wb.getRecordingTime();
   } else {
-    this.time = Wb.lastEndTime;
+    this.time = Wb.lastEndTime - Wb.subtractTime;
   }
 }
 /* === END Event objects === */
@@ -138,10 +138,8 @@ window.Wb = {
       var hei;
       var tmp;
 
-      // Only push and save if we're recording or initial color set 
-      // otherwise we're just replaying an action and don't need to save it.
-      //if(Wb.recording || (!Wb.isPlaying && type == "strokestyle")) {
-      if (Wb.recording){
+      // Only push and save if we're recording
+      if (Wb.recording || (!Wb.isPlaying && type == "strokestyle")){
         Wb.events.push(wbevent);
       }
 
