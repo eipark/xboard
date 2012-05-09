@@ -1,10 +1,26 @@
 (function() {
+
+/**
+ * =============
+ *    Helpers
+ * =============
+ */
+
+function executeFunctionByName(functionName, context /*, args */) {
+  var args = Array.prototype.slice.call(arguments, 2);
+  var namespaces = functionName.split(".");
+  var func = namespaces.pop();
+  for (var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+  }
+  return context[func].apply(context, args);
+}
+
 /**
  * =============
  *     MODEL
  * =============
  */
-
 /* === BEGIN Event objects === */
 
 /* Begin path event */
@@ -28,6 +44,7 @@ function DrawPathToPoint(x, y) {
   this.coordinates = [x, y];
   this.time = Wb.getRecordingTime();
 }
+
 /*Erase event */
 function Erase(x, y) {
   this.type = "erase";
@@ -36,6 +53,7 @@ function Erase(x, y) {
   this.width = 10;
   this.time = Wb.getRecordingTime();
 }
+
 /* Stroke style event
    Don't want this to take up time, so we set it as last
    event before recording ended. Delays should only be on
@@ -319,7 +337,7 @@ window.Wb = {
 
     /**
      * Wrapper around drawing functions, we want to make sure
-     * recording is on first before anything gets executed
+     * recording is on first before anything gets executed.
      */
     canvasFunction: function(function_name, x, y){
       if (Wb.checkRecordStatus()) {
@@ -404,14 +422,8 @@ window.Wb = {
      * according to the events in events.
      * If a time is specified it only redraws up to that point. Otherwise it
      * redraws the entire canvas.
-     * TODO: If we are jumping to a time in the future from current playback
-     * we optimize the redraw by not refreshing the entire canvas.
-     * TODO: Rather than check condition every time in the loop, optimize
-     * by finding the event up to which we need to check before hand. Maybe
-     * a binary search over the events?
     */
     redraw: function(time) {
-
       // Only redraw the entire board if we're going backwards from our current state
       if (!(typeof time === "undefined" || time >= Wb.playbackClock)) {
         Wb.animIndex = 0;
@@ -439,13 +451,13 @@ window.Wb = {
       }
     },
 
-     /**
-       * Sets stroke style for the canvas. Stroke
-       * style defines the color with which every
-       * stroke should be drawn on the canvas.
-       *
-       * @param color The wanted stroke color
-      */
+   /**
+     * Sets stroke style for the canvas. Stroke
+     * style defines the color with which every
+     * stroke should be drawn on the canvas.
+     *
+     * @param color The wanted stroke color
+    */
     setStrokeStyle: function(color) {
       var e = new StrokeStyle(color);
       Wb.execute(e);
