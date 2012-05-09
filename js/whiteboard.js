@@ -118,8 +118,7 @@ window.Wb = {
       this.context.lineCap = "square";
 
       // Initialize the selected color and add it as the first event
-      var e = new StrokeStyle(Wb.drawColor);
-      Wb.events.push(e);
+      Wb.setStrokeStyle(Wb.drawColor);
     },
 
     /**
@@ -139,7 +138,7 @@ window.Wb = {
       var tmp;
 
       // Only push and save if we're recording
-      if (Wb.recording || (!Wb.isPlaying && type == "s")){
+      if (Wb.recording){
         Wb.events.push(wbevent);
       }
 
@@ -170,7 +169,7 @@ window.Wb = {
      * Resolves the relative width and height of the canvas
      * element. Relative parameters can vary depending on the
      * zoom. Both are equal to 1 if no zoom is encountered.
-     * 
+     *
      * @return An array containing the relative width as first
      * element and relative height as second.
      */
@@ -390,6 +389,10 @@ window.Wb = {
       console.log(color);
       var e = new StrokeStyle(color);
       Wb.execute(e);
+      // always push changes in stroke style if not playing
+      if (!Wb.isPlaying) {
+        Wb.events.push(e);
+      }
     },
 
     /* === END ACTIONS === */

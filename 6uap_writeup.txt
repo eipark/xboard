@@ -89,7 +89,9 @@ https://github.com/WebReflection/JSONH
 
 // CURR BUGS
 - change handlers to mouseUp?
-
+- record, swithc strokes/tool. playback halfway, click record, hangs
+- check erase working properly
+- cursor in chrome
 
 // want an embed like youtube for playback. based in an iframe. but for recording, need the full code to embe
 
