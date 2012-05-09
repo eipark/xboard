@@ -119,9 +119,8 @@ window.WbUi = {
     });
     WbUi.getElement('button_eraser').mousedown(WbUi.activateEraser);
     WbUi.getElement('button_animate').mousedown(Wb.animate);
-    WbUi.getElement('recorder').mousedown(WbUi.recordToggle);
-    WbUi.getElement('button_undo').mousedown(Wb.undo);
-    WbUi.getElement('play_pause').mousedown(WbUi.playPauseToggle);
+    WbUi.getElement('recorder').mouseup(WbUi.recordToggle);
+    WbUi.getElement('play_pause').mouseup(WbUi.playPauseToggle);
 
     //remove onmousedown from html and make this work
 
@@ -176,8 +175,8 @@ window.WbUi = {
   // for recording state.
   record: function(elt) {
     $("#slider").slider("disable");
-    $("button#play_pause").attr("disabled", true);
     $("#drawsection").addClass("is_recording");
+    $("button#play_pause").attr("disabled", true);
     Wb.record();
   },
 
