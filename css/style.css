@@ -96,7 +96,7 @@ div#elapsed_timer, div#time_separator, div#total_timer, div#play_pause, div#reco
 
 div#recorder{
   position: absolute;
-  left: 43%;
+  left: 45%;
   border-right: 1px solid #999;
   border-left: 1px solid #999;
   padding: 7px 10px;
