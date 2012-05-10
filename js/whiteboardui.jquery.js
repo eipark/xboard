@@ -36,7 +36,7 @@ function readableTime(ms) {
   x /= 60;
   var minutes = Math.floor(x % 60);
   seconds = seconds >= 10 ? seconds : "0" + seconds;
-  minutes = minutes >= 10 ? minutes : "0" + minutes;
+  minutes = minutes >= 10 ? minutes : "" + minutes;
   return minutes + ":" + seconds;
 }
 
