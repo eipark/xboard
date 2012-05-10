@@ -140,6 +140,10 @@ window.WbUi = {
     WbUi.getElement('recorder').mouseup(WbUi.recordToggle);
     WbUi.getElement('play_pause').mouseup(WbUi.playPauseToggle);
 
+    document.getElementById("canvas").addEventListener("touchstart", WbUi.touchStart, false);
+    document.getElementById("canvas").addEventListener("touchmove", WbUi.touchMove, false);
+    document.getElementById("canvas").addEventListener("touchend", WbUi.touchStart, false);
+
 
     $("#xboard-container #slider").slider({
       start: function(event, ui) {
@@ -251,6 +255,17 @@ window.WbUi = {
       return canvasy;
   },
 
+  touchStart: function(event){
+    event.preventDefault();
+  },
+
+  touchMove: function(event){
+    event.preventDefault();
+  },
+
+  touchEnd: function(event){
+    event.preventDefault();
+  },
   /**
    * Returns the canvas element to its default definition
    * without any extra classes defined by any of the selected
@@ -273,6 +288,8 @@ window.WbUi = {
   activatePencil: function(event) {
     WbUi.changeTool();
     WbUi.canvasElement.bind("mousedown", WbUi.beginPencilDraw);
+    document.getElementById("canvas").addEventListener("touchstart", WbUi.beginPencilDraw, false);
+
     WbUi.canvasElement.addClass(WbUi.getElementName('pencil_active'));
     $("#button_pencil").addClass("active");
   },
@@ -290,8 +307,14 @@ window.WbUi = {
       WbUi.canvasElement.bind("mousemove", function(event) {
           Wb.canvasFunction("pencilDraw", WbUi.getX(event), WbUi.getY(event));
       });
+      document.getElementById("canvas").addEventListener("touchmove", WbUi.asdf, false);
+      document.getElementById("canvas").addEventListener("touchend", WbUi.endPencilDraw, false);
       WbUi.canvasElement.bind("mouseup", WbUi.endPencilDraw);
       WbUi.canvasElement.bind("mouseout", WbUi.endPencilDraw);
+  },
+
+  asdf: function(event) {
+    Wb.canvasFunction("pencilDraw", WbUi.getX(event), WbUi.getY(event));
   },
 
   /**
@@ -344,7 +367,7 @@ window.WbUi = {
    * Ends erasing which means that mouse moving won't
    * be registered as erasing action anymore. This should be
    * executed on mouseup after user has started erasing.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */

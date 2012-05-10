@@ -313,8 +313,8 @@ window.Wb = {
      * @param y Coordinate y of the path ending point
      */
     pencilDraw: function(x, y) {
-        var e = new DrawPathToPoint(x, y);
-        Wb.execute(e);
+      var e = new DrawPathToPoint(x, y);
+      Wb.execute(e);
     },
 
     /**
@@ -324,8 +324,8 @@ window.Wb = {
      * @param y Coordinate y of the path starting point
      */
     beginErasing: function(x, y) {
-        var e = new BeginPath(x, y);
-        Wb.execute(e);
+      var e = new BeginPath(x, y);
+      Wb.execute(e);
     },
 
     /**
@@ -339,8 +339,8 @@ window.Wb = {
      * @param y Coordinate y of the path ending point
      */
     erasePoint: function(x, y) {
-        var e = new Erase(x, y);
-        Wb.execute(e);
+      var e = new Erase(x, y);
+      Wb.execute(e);
     },
 
     /**
