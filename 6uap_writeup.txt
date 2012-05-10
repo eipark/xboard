@@ -21,8 +21,6 @@ clicking Add Transcript
 
 - separation of UI and logic components between Wb and WbUI
 
-
-
 - notion of playing/pausing playback, save state of playback.
 - update clock when you scrub.
 
@@ -76,6 +74,7 @@ IMPROVEMENTS
 - check save/load from JSON
 - compression http://web-resource-optimization.blogspot.com/2011/06/json-compression-algorithms.html
 https://github.com/WebReflection/JSONH
+https://github.com/hiddentao/lzw-async LZW makes sense because there is heavy repetition of common strings in our json
 - make embeddable
 - switches for create/embed mode
 
@@ -85,7 +84,7 @@ https://github.com/WebReflection/JSONH
 - make type names shorter
 - loading image?
 
-- cjson http://stevehanov.ca/blog/index.php?id=104, JSONH had difficulties with nesting of objects
+- cjson http://stevehanov.ca/blog/index.php?id=104, JSONH had difficulties with oesting of objects
 
 // CURR BUGS
 - change handlers to mouseUp?
@@ -101,3 +100,7 @@ http://laktek.com/2008/10/27/really-simple-color-picker-in-jquery/
 - generating unique URL, 11 string random
 
 - doesnt matter if people can dupe and record its not like it'll save back.
+
+====================
+
+draw for one minute, circuit problem, some text, ~800 events. ~10kb.
