@@ -234,7 +234,6 @@ window.Wb = {
       clearTimeout(Wb.playbackClockTimeout);
       Wb.setPlaybackClock(time);
       if (Wb.isPlaying) {
-        alert("x");
         Wb.animateNext(Wb.events[Wb.animIndex].time - time);
       }
     },
