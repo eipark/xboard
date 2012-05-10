@@ -1,3 +1,4 @@
+body { padding: 50px; }
 .clearfix {
   *zoom: 1;
 }
@@ -19,11 +20,6 @@ div#top-row{
   height: 400px;
 }
 
-div#tools {
-  width: 78px;
-  border: 1px solid #000;
-  border-right: none;
-}
 
 div#drawsection {
   border: 1px solid #000;
@@ -65,10 +61,32 @@ div#loader {
 .pencil_active {cursor: url("img/square_5x5.png"), auto;}
 .eraser_active {cursor: url("img/square_10x10.png"), auto;}
 
+/* Toolbar
+-------------------------------*/
+div#tools {
+  border: 1px solid #000;
+  border-left: none;
+  padding: 5px;
+}
+
+div#tools input {
+  width: 27px;
+  height: 27px;
+  border: 1px solid #000;
+  display: block;
+  margin-bottom: 3px;
+}
+
+input#button_pencil{
+  background: url("img/pencil.png") no-repeat;
+}
+input#button_eraser{
+  background: url("img/eraser.png") no-repeat;
+}
+
 /* Bottom Row
 -------------------------------*/
 div#bottom-row{
-  margin-left: 79px;
   margin-top: 1px;
   border: 1px solid #000;
   border-top: none;
