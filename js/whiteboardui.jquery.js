@@ -1,13 +1,31 @@
 $(document).ready(function(){
   WbUi.init($("canvas"));
 
-  // Init color picker and set handler here since can only set
-  // click listener after it is init
-  $("#color_picker").colorPicker({pickerDefault: "000000"});
-  $(".colorPicker-swatch").click(function(){
-    Wb.setStrokeStyle($(this).css("background-color"));
-  });
+  // Restore from an embed code if one is passed in
+  var embed_code = url_query('embed');
+  if (embed_code) {
+    Wb.restore(embed_code);
+  }
+
+  // If in an iFrame embed, remove all recording elements.
+  if (window != window.top) {
+    $(".recording_elt").remove();
+  }
+
 });
+
+function url_query(query) {
+  query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var expr = "[\\?&]"+query+"=([^&#]*)";
+  var regex = new RegExp( expr );
+  var results = regex.exec( window.location.href );
+  if( results !== null ) {
+    return results[1];
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+  } else {
+    return false;
+  }
+}
 
 (function() {
 
@@ -122,7 +140,6 @@ window.WbUi = {
     WbUi.getElement('recorder').mouseup(WbUi.recordToggle);
     WbUi.getElement('play_pause').mouseup(WbUi.playPauseToggle);
 
-    //remove onmousedown from html and make this work
 
     $("#xboard-container #slider").slider({
       start: function(event, ui) {
@@ -147,6 +164,11 @@ window.WbUi = {
           WbUi.wasPlaying = false;
         }
       }
+    });
+
+    $("#color_picker").colorPicker({pickerDefault: "000000"});
+    $(".colorPicker-swatch").click(function(){
+      Wb.setStrokeStyle($(this).css("background-color"));
     });
 
   },
@@ -361,6 +383,11 @@ window.WbUi = {
     WbUi.setClock();
     Wb.recordClockInterval = setTimeout(WbUi.setClockInterval, Wb.sampleRate);
   },
+
+  setMaxTime: function(time){
+    $("#xboard-container #slider").slider("option", "max", time);
+    $("#total_timer").html(readableTime(time));
+  }
 
 };
 })();
