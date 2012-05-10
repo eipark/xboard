@@ -1,4 +1,4 @@
-body { padding: 50px; }
+body { !padding: 50px; }
 .clearfix {
   *zoom: 1;
 }
@@ -16,8 +16,6 @@ div#xboard-container {
 }
 
 div#top-row{
-  width: 880px;
-  height: 400px;
 }
 
 
