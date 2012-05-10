@@ -92,6 +92,7 @@ https://github.com/WebReflection/JSONH
 - record, swithc strokes/tool. playback halfway, click record, hangs
 - check erase working properly
 - cursor in chrome
+- changing stroke color while playing back
 
 // want an embed like youtube for playback. based in an iframe. but for recording, need the full code to embe
 
