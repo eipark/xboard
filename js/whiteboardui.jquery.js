@@ -140,11 +140,6 @@ window.WbUi = {
     WbUi.getElement('recorder').mouseup(WbUi.recordToggle);
     WbUi.getElement('play_pause').mouseup(WbUi.playPauseToggle);
 
-    document.getElementById("canvas").addEventListener("touchstart", WbUi.touchStart, false);
-    document.getElementById("canvas").addEventListener("touchmove", WbUi.touchMove, false);
-    document.getElementById("canvas").addEventListener("touchend", WbUi.touchStart, false);
-
-
     $("#xboard-container #slider").slider({
       start: function(event, ui) {
         if (Wb.isPlaying) {

@@ -101,3 +101,5 @@ http://laktek.com/2008/10/27/really-simple-color-picker-in-jquery/
 - generating unique URL, 11 string random
 
 - doesnt matter if people can dupe and record its not like it'll save back.
+
+- firefox has bug in embeddable... data is there, have to click to see drawings, otherwise won't draw.
