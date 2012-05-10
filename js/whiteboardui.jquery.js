@@ -238,6 +238,7 @@ window.WbUi = {
     WbUi.canvasElement.unbind();
     WbUi.canvasElement.removeClass(WbUi.getElementName('pencil_active'));
     WbUi.canvasElement.removeClass(WbUi.getElementName('eraser_active'));
+    $("div#tools input").removeClass("active");
   },
 
   /**
@@ -251,6 +252,7 @@ window.WbUi = {
     WbUi.changeTool();
     WbUi.canvasElement.bind("mousedown", WbUi.beginPencilDraw);
     WbUi.canvasElement.addClass(WbUi.getElementName('pencil_active'));
+    $("#button_pencil").addClass("active");
   },
 
   /**
@@ -296,6 +298,7 @@ window.WbUi = {
     WbUi.changeTool();
     WbUi.canvasElement.bind("mousedown", WbUi.beginErasing);
     WbUi.canvasElement.addClass(WbUi.getElementName('eraser_active'));
+    $("#button_eraser").addClass("active");
   },
 
   /**

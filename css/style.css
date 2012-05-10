@@ -67,14 +67,24 @@ div#tools {
   border: 1px solid #000;
   border-left: none;
   padding: 5px;
+  background: #ddd;
 }
 
 div#tools input {
-  width: 27px;
-  height: 27px;
-  border: 1px solid #000;
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ddd;
   display: block;
   margin-bottom: 3px;
+}
+
+div#tools input:hover {
+  border-color: #000;
+  cursor: pointer;
+}
+
+div#tools input.active{
+  border-color: #000;
 }
 
 input#button_pencil{
