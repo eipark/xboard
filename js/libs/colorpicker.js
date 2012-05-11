@@ -38,7 +38,7 @@
         cItterate       = 0,
         templates       = {
             control : $('<div id="selectorOwner" class="colorPicker-picker">&nbsp;</div>'),
-            palette : $('<div id="colorPicker_palette" class="colorPicker-palette" />'),
+            palette : $('<div id="colorPicker_palette" class="colorPicker-palette recording_elt" />'),
             swatch  : $('<div class="colorPicker-swatch">&nbsp;</div>'),
             hexLabel: $('<label for="colorPicker_hex">Hex</label>'),
             hexField: $('<input type="text" id="colorPicker_hex" disabled="disabled"/>')
