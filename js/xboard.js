@@ -293,10 +293,10 @@ window.XB = {
       XB.redraw(time);
       // stop the old playbackClockTimeout and start a new one at our new time
       clearTimeout(XB.playbackClockTimeout);
-      XB.setPlaybackClock(time);
       if (XB.isPlaying) {
         XB.animateNext(XB.events[XB.animIndex].time - time);
       }
+      XB.setPlaybackClock(time);
     },
 
     // stops playback and playback clock

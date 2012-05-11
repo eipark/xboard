@@ -74,7 +74,7 @@ div#tools input {
   height: 28px;
   border: 1px solid #ddd;
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 5px;
 }
 
 div#tools input:hover {
@@ -82,7 +82,7 @@ div#tools input:hover {
   cursor: pointer;
 }
 
-div#tools input.active{
+div#tools input.drawing_tool.active{
   border-color: #000;
 }
 
@@ -92,8 +92,8 @@ input#button_pencil{
 input#button_eraser{
   background: url("img/eraser.png") no-repeat;
 }
-input#button_clear{
-  background: url("img/eraser.png") no-repeat;
+input#button_clear {
+  background: url("img/clear.png") center center no-repeat;
 }
 
 /* Bottom Row
@@ -200,6 +200,8 @@ button#play_pause:disabled:hover, button#recorder:disabled:hover{
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+
 
 
 /* Color Picker*/

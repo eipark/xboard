@@ -200,6 +200,7 @@ window.XBUI = {
     $("#slider").slider("disable");
     $("#drawsection").addClass("is_recording");
     $("button#play_pause").attr("disabled", true);
+    $("#recorder").attr("title", "Stop Recording");
     XB.record();
   },
 
@@ -207,6 +208,7 @@ window.XBUI = {
     $("button#play_pause").attr("disabled", false);
     $("#slider").slider("enable");
     $("#drawsection").removeClass("is_recording");
+    $("#recorder").attr("title", "Record");
     XB.pauseRecord();
   },
 

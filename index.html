@@ -23,10 +23,10 @@
         <div id="loader"></div>
       </div><!-- /drawsection -->
       <div class="recording_elt" id="tools">
-          <input id="button_pencil" type="button"></input>
-          <input id="button_eraser" type="button"></input>
-          <input id="button_clear" type="button"></input>
-          <div><input id="color_picker" type="text" value="#000000"/></div>
+          <input id="button_pencil" class="drawing_tool" title="Pencil" type="button"></input>
+          <input id="button_eraser" class="drawing_tool" title="Eraser" type="button"></input>
+          <input id="button_clear" title="Clear Canvas" type="button"></input>
+          <div title="Pick a Color"><input id="color_picker" type="text" value="#000000"/></div>
       </div> <!-- /tools -->
     </div>
     <div id="bottom-row">
@@ -40,7 +40,7 @@
         <div id="elapsed_timer" class="timing">0:00</div>
         <div id="time_separator" class="timing">/</div>
         <div id="total_timer" class="timing">0:00</div>
-        <button id="recorder" class="recording_elt"></button>
+        <button id="recorder" class="recording_elt" title="Record"></button>
 
       </div>
     </div>
