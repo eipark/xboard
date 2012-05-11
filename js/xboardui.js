@@ -1,10 +1,10 @@
 $(document).ready(function(){
-  WbUi.init($("canvas"));
+  XBUI.init($("canvas"));
 
   // Restore from an embed code if one is passed in
   var embed_code = url_query('embed');
   if (embed_code) {
-    Wb.restore(embed_code);
+    XB.restore(embed_code);
   }
 
   // If in an iFrame embed, remove all recording elements.
@@ -40,7 +40,7 @@ function readableTime(ms) {
   return minutes + ":" + seconds;
 }
 
-window.WbUi = {
+window.XBUI = {
 
   canvasElement: null, // jQuery element for canvas
 
@@ -52,7 +52,7 @@ window.WbUi = {
    * 
    * If names or classes have different names, they
    * should be defined in the script initialization,
-   * that is WbUi.init() function.
+   * that is XBUI.init() function.
    *
    * The purpose of this list is only to show what
    * element definitions this scripts uses.
@@ -74,12 +74,12 @@ window.WbUi = {
   },
 
   /**
-   * Initializes the Wb UI script.
+   * Initializes the XB UI script.
    *
    * @param canvasElement The canvas jQuery element.
    * @param elemconf The element configuration array.
    * This array can contain any of the elements defined
-   * in WbUi.elemConf. If the element names differ
+   * in XBUI.elemConf. If the element names differ
    * from the default array indexes, they should be given
    * in this array. Only the differing elements should be
    * defined.
@@ -87,7 +87,7 @@ window.WbUi = {
   init: function(canvasElement, elemconf) {
     this.canvasElement = canvasElement;
     $("#xboard-container #slider").slider({});
-    Wb.init(canvasElement.attr("id"));
+    XB.init(canvasElement.attr("id"));
     if (elemconf !== undefined) {
       for (var i in this.elementConf) {
         if (elemconf.i !== undefined) {
@@ -99,32 +99,32 @@ window.WbUi = {
   },
 
   /**
-   * Resolves the element name from WbUi.elemConf.
+   * Resolves the element name from XBUI.elemConf.
    * If index defined by ind parameter can be found in that
    * array and the array's value is returned. Otherwise
    * the ind parameter itself is returned.
    *
-   * @param ind The element's index name in WbUi.elemConf
+   * @param ind The element's index name in XBUI.elemConf
    * @return The elements correct name
    */
   getElementName: function(ind) {
-    if (WbUi.elementConf[ind] === undefined ||
-        WbUi.elementConf[ind] === null) {
+    if (XBUI.elementConf[ind] === undefined ||
+        XBUI.elementConf[ind] === null) {
       return ind;
     }
-    return WbUi.elementConf[ind];
+    return XBUI.elementConf[ind];
   },
 
   /**
    * Resolves the jQuery element with the defined id which
-   * is resolved by WbUi.getElementName function.
+   * is resolved by XBUI.getElementName function.
    *
-   * @param ind The element's index name in WbUi.elemConf
+   * @param ind The element's index name in XBUI.elemConf
    * or the wanted id name that's not included in that array.
    * @return The jQuery element with the resolved id
    */
   getElement: function(ind) {
-    return $('#' + WbUi.getElementName(ind));
+    return $('#' + XBUI.getElementName(ind));
   },
 
   /**
@@ -132,20 +132,20 @@ window.WbUi = {
    * and other UI elements.
    */
   addListeners: function() {
-    WbUi.getElement('button_pencil').mousedown(function() {
-      WbUi.activatePencil();
+    XBUI.getElement('button_pencil').mousedown(function() {
+      XBUI.activatePencil();
     });
-    WbUi.getElement('button_eraser').mousedown(WbUi.activateEraser);
-    WbUi.getElement('button_animate').mousedown(Wb.animate);
-    WbUi.getElement('recorder').mouseup(WbUi.recordToggle);
-    WbUi.getElement('play_pause').mouseup(WbUi.playPauseToggle);
+    XBUI.getElement('button_eraser').mousedown(XBUI.activateEraser);
+    XBUI.getElement('button_animate').mousedown(XB.animate);
+    XBUI.getElement('recorder').mouseup(XBUI.recordToggle);
+    XBUI.getElement('play_pause').mouseup(XBUI.playPauseToggle);
 
 
     $("#xboard-container #slider").slider({
       start: function(event, ui) {
-        if (Wb.isPlaying) {
-          WbUi.wasPlaying = Wb.isPlaying;
-          Wb.pause();
+        if (XB.isPlaying) {
+          XBUI.wasPlaying = XB.isPlaying;
+          XB.pause();
         }
       }
     });
@@ -158,17 +158,17 @@ window.WbUi = {
 
     $("#xboard-container #slider").slider({
       stop: function(event, ui) {
-        Wb.jump(ui.value);
-        if (WbUi.wasPlaying) {
-          Wb.play();
-          WbUi.wasPlaying = false;
+        XB.jump(ui.value);
+        if (XBUI.wasPlaying) {
+          XB.play();
+          XBUI.wasPlaying = false;
         }
       }
     });
 
     $("#color_picker").colorPicker({pickerDefault: "000000"});
     $(".colorPicker-swatch").click(function(){
-      Wb.setStrokeStyle($(this).css("background-color"));
+      XB.setStrokeStyle($(this).css("background-color"));
     });
 
   },
@@ -186,11 +186,11 @@ window.WbUi = {
   },
 
   playPauseToggle: function() {
-    WbUi.toggler($("#play_pause"), "is_playing", WbUi.pause, WbUi.play);
+    XBUI.toggler($("#play_pause"), "is_playing", XBUI.pause, XBUI.play);
   },
 
   recordToggle: function() {
-    WbUi.toggler($("#recorder"), "is_recording", WbUi.pauseRecord, WbUi.record);
+    XBUI.toggler($("#recorder"), "is_recording", XBUI.pauseRecord, XBUI.record);
   },
 
   // Changes recording button and disables buttons not appropriate
@@ -199,26 +199,26 @@ window.WbUi = {
     $("#slider").slider("disable");
     $("#drawsection").addClass("is_recording");
     $("button#play_pause").attr("disabled", true);
-    Wb.record();
+    XB.record();
   },
 
   pauseRecord: function() {
     $("button#play_pause").attr("disabled", false);
     $("#slider").slider("enable");
     $("#drawsection").removeClass("is_recording");
-    Wb.pauseRecord();
+    XB.pauseRecord();
   },
 
   play: function() {
-    console.log("---WbUi.play()");
+    console.log("---XBUI.play()");
     $("#recorder").attr("disabled", true);
-    Wb.play();
+    XB.play();
   },
 
   pause: function() {
-    console.log("---WbUi.pause()");
+    console.log("---XBUI.pause()");
     $("#recorder").attr("disabled", false);
-    Wb.pause();
+    XB.pause();
   },
 
   /**
@@ -231,7 +231,7 @@ window.WbUi = {
    */
   getX: function(event) {
     var cssx = (event.clientX - this.canvasElement.offset().left);
-      var xrel = Wb.getRelative().width;
+      var xrel = XB.getRelative().width;
       var canvasx = cssx * xrel;
       return canvasx;
   },
@@ -246,7 +246,7 @@ window.WbUi = {
    */
   getY: function(event) {
       var cssy = (event.clientY - this.canvasElement.offset().top);
-      var yrel = Wb.getRelative().height;
+      var yrel = XB.getRelative().height;
       var canvasy = cssy * yrel;
       return canvasy;
   },
@@ -257,9 +257,9 @@ window.WbUi = {
    * UI tools.
    */
   changeTool: function() {
-    WbUi.canvasElement.unbind();
-    WbUi.canvasElement.removeClass(WbUi.getElementName('pencil_active'));
-    WbUi.canvasElement.removeClass(WbUi.getElementName('eraser_active'));
+    XBUI.canvasElement.unbind();
+    XBUI.canvasElement.removeClass(XBUI.getElementName('pencil_active'));
+    XBUI.canvasElement.removeClass(XBUI.getElementName('eraser_active'));
     $("div#tools input").removeClass("active");
   },
 
@@ -271,9 +271,9 @@ window.WbUi = {
    * this action
    */
   activatePencil: function(event) {
-    WbUi.changeTool();
-    WbUi.canvasElement.bind("mousedown", WbUi.beginPencilDraw);
-    WbUi.canvasElement.addClass(WbUi.getElementName('pencil_active'));
+    XBUI.changeTool();
+    XBUI.canvasElement.bind("mousedown", XBUI.beginPencilDraw);
+    XBUI.canvasElement.addClass(XBUI.getElementName('pencil_active'));
     $("#button_pencil").addClass("active");
   },
 
@@ -286,12 +286,12 @@ window.WbUi = {
    * this action
    */
   beginPencilDraw: function(event) {
-      Wb.canvasFunction("beginPencilDraw", WbUi.getX(event), WbUi.getY(event));
-      WbUi.canvasElement.bind("mousemove", function(event) {
-          Wb.canvasFunction("pencilDraw", WbUi.getX(event), WbUi.getY(event));
+      XB.canvasFunction("beginPencilDraw", XBUI.getX(event), XBUI.getY(event));
+      XBUI.canvasElement.bind("mousemove", function(event) {
+          XB.canvasFunction("pencilDraw", XBUI.getX(event), XBUI.getY(event));
       });
-      WbUi.canvasElement.bind("mouseup", WbUi.endPencilDraw);
-      WbUi.canvasElement.bind("mouseout", WbUi.endPencilDraw);
+      XBUI.canvasElement.bind("mouseup", XBUI.endPencilDraw);
+      XBUI.canvasElement.bind("mouseout", XBUI.endPencilDraw);
   },
 
   /**
@@ -303,10 +303,10 @@ window.WbUi = {
    * this action
    */
   endPencilDraw: function (event) {
-    Wb.canvasFunction("endPencilDraw");
-    WbUi.canvasElement.unbind("mousemove");
-    WbUi.canvasElement.unbind("mouseup");
-    WbUi.canvasElement.unbind("mouseout");
+    XB.canvasFunction("endPencilDraw");
+    XBUI.canvasElement.unbind("mousemove");
+    XBUI.canvasElement.unbind("mouseup");
+    XBUI.canvasElement.unbind("mouseout");
   },
 
   /**
@@ -317,9 +317,9 @@ window.WbUi = {
    * this action
    */
   activateEraser: function(event) {
-    WbUi.changeTool();
-    WbUi.canvasElement.bind("mousedown", WbUi.beginErasing);
-    WbUi.canvasElement.addClass(WbUi.getElementName('eraser_active'));
+    XBUI.changeTool();
+    XBUI.canvasElement.bind("mousedown", XBUI.beginErasing);
+    XBUI.canvasElement.addClass(XBUI.getElementName('eraser_active'));
     $("#button_eraser").addClass("active");
   },
 
@@ -332,12 +332,12 @@ window.WbUi = {
    * this action
    */
   beginErasing: function(event) {
-      Wb.canvasFunction("beginErasing", WbUi.getX(event), WbUi.getY(event));
-      WbUi.canvasElement.bind("mousemove", function(event) {
-          Wb.canvasFunction("erasePoint", WbUi.getX(event), WbUi.getY(event));
+      XB.canvasFunction("beginErasing", XBUI.getX(event), XBUI.getY(event));
+      XBUI.canvasElement.bind("mousemove", function(event) {
+          XB.canvasFunction("erasePoint", XBUI.getX(event), XBUI.getY(event));
       });
-      WbUi.canvasElement.bind("mouseup", WbUi.endErasing);
-      WbUi.canvasElement.bind("mouseout", WbUi.endErasing);
+      XBUI.canvasElement.bind("mouseup", XBUI.endErasing);
+      XBUI.canvasElement.bind("mouseout", XBUI.endErasing);
   },
 
   /**
@@ -349,9 +349,9 @@ window.WbUi = {
    * this action
    */
   endErasing: function(event) {
-    WbUi.canvasElement.unbind("mousemove");
-    WbUi.canvasElement.unbind("mouseup");
-    WbUi.canvasElement.unbind("mouseout");
+    XBUI.canvasElement.unbind("mousemove");
+    XBUI.canvasElement.unbind("mouseup");
+    XBUI.canvasElement.unbind("mouseout");
   },
 
   /* sets the clock time  */
@@ -360,18 +360,18 @@ window.WbUi = {
     // the current recording time because it means we are recording
     // and the total time is increasing
     if (typeof time === "undefined"){ // implies we are recording, so we update the max
-      time = Wb.getRecordingTime();
+      time = XB.getRecordingTime();
       $("#xboard-container #slider").slider("option", "max", time);
-    } else if (time > Wb.getRecordingTime()) {
+    } else if (time > XB.getRecordingTime()) {
       // since this time is set by an incrementer, the last one will exceed
       // our recording time so we set it back down and stop the timeout
       // since we've reached the end of playback
-      time = Wb.getRecordingTime();
+      time = XB.getRecordingTime();
     }
     // set clocks in UI, elapsed/total
     $("#elapsed_timer").html(readableTime(time));
-    // want Wb.getRecordingTime() since on playback recordingtime stays same
-    $("#total_timer").html(readableTime(Wb.getRecordingTime()));
+    // want XB.getRecordingTime() since on playback recordingtime stays same
+    $("#total_timer").html(readableTime(XB.getRecordingTime()));
 
     // set slider position
     $("#xboard-container #slider").slider("option", "value", time);
@@ -380,8 +380,8 @@ window.WbUi = {
   /* Wrapper for setClock that allows an interval to be set
      using setTimeout instead of setInterval. Prevents "blocking" */
   setClockInterval: function() {
-    WbUi.setClock();
-    Wb.recordClockInterval = setTimeout(WbUi.setClockInterval, Wb.sampleRate);
+    XBUI.setClock();
+    XB.recordClockInterval = setTimeout(XBUI.setClockInterval, XB.sampleRate);
   },
 
   setMaxTime: function(time){

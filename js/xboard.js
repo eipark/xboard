@@ -6,6 +6,9 @@
  * =============
  */
 
+/* Calls functions by their name and arguments. Used in canvasFunction
+   which is a wrapper around all drawing functions and the interface to XB
+   from XBUI. */
 function executeFunctionByName(functionName, context /*, args */) {
   var args = Array.prototype.slice.call(arguments, 2);
   var namespaces = functionName.split(".");
@@ -74,20 +77,20 @@ function lzw_decode(s) {
  *     MODEL
  * =============
  */
-/* === BEGIN Event objects === */
 
+/* === BEGIN Event objects === */
 /* Begin path event */
 function BeginPath(x, y) {
   this.coord = [x, y];
   this.type="b";
-  this.time = Wb.getRecordingTime();
+  this.time = XB.getRecordingTime();
   console.log("Begin path: "+this.time);
 }
 
 /* End path event */
 function ClosePath() {
   this.type = "c";
-  this.time = Wb.getRecordingTime();
+  this.time = XB.getRecordingTime();
   console.log("Close path: "+this.time);
 }
 
@@ -95,7 +98,7 @@ function ClosePath() {
 function DrawPathToPoint(x, y) {
   this.type = "d";
   this.coord = [x, y];
-  this.time = Wb.getRecordingTime();
+  this.time = XB.getRecordingTime();
 }
 
 /*Erase event */
@@ -104,7 +107,7 @@ function Erase(x, y) {
   this.coord = [x, y];
   this.height = 10;
   this.width = 10;
-  this.time = Wb.getRecordingTime();
+  this.time = XB.getRecordingTime();
 }
 
 /* Stroke style event
@@ -115,10 +118,10 @@ function StrokeStyle(color) {
   this.type = "s";
   this.color = color;
   console.log("Color: " + color);
-  if (Wb.recording) {
-    this.time = Wb.getRecordingTime();
+  if (XB.recording) {
+    this.time = XB.getRecordingTime();
   } else {
-    this.time = Wb.lastEndTime - Wb.subtractTime;
+    this.time = XB.lastEndTime - XB.subtractTime;
   }
 }
 /* === END Event objects === */
@@ -130,7 +133,7 @@ function StrokeStyle(color) {
  *    STATIC CONTROL
  * ====================
  */
-window.Wb = {
+window.XB = {
 
     context: null,
     canvas: null,
@@ -171,48 +174,48 @@ window.Wb = {
       this.context.lineCap = "square";
 
       // Initialize the selected color and add it as the first event
-      Wb.setStrokeStyle(Wb.drawColor);
+      XB.setStrokeStyle(XB.drawColor);
     },
 
     /**
      * Executes the event that matches the given event
      * object
      *
-     * @param wbevent The event object to be executed.
+     * @param xbevent The event object to be executed.
      * @param firstexecute tells the function if the event is new and
      *          should be saved to this.events
      * This object should be one of the model's event objects.
      */
-    //execute: function(wbevent, firstexecute) {
-    execute: function(wbevent){
-      var type = wbevent.type;
+    //execute: function(xbevent, firstexecute) {
+    execute: function(xbevent){
+      var type = xbevent.type;
       var wid;
       var hei;
       var tmp;
 
       // Only push and save if we're recording
-      if (Wb.recording){
-        Wb.events.push(wbevent);
+      if (XB.recording){
+        XB.events.push(xbevent);
       }
 
       if(type === "b") {
         this.context.beginPath();
-        this.context.moveTo(wbevent.coord[0],
-                       wbevent.coord[1]);
+        this.context.moveTo(xbevent.coord[0],
+                       xbevent.coord[1]);
         this.context.stroke();
       } else if (type === "d") {
-        this.context.lineTo(wbevent.coord[0],
-                       wbevent.coord[1]);
+        this.context.lineTo(xbevent.coord[0],
+                       xbevent.coord[1]);
         this.context.stroke();
       } else if (type === "c") {
         this.context.closePath();
       } else if(type === "s") {
-        this.context.strokeStyle = wbevent.color;
+        this.context.strokeStyle = xbevent.color;
       } else if (type === "e") {
-        this.context.clearRect(wbevent.coord[0],
-                               wbevent.coord[1],
-                               wbevent.width,
-                               wbevent.height);
+        this.context.clearRect(xbevent.coord[0],
+                               xbevent.coord[1],
+                               xbevent.width,
+                               xbevent.height);
         }
 
     },
@@ -236,16 +239,16 @@ window.Wb = {
     /**
      * Starts the animation action in the canvas from start. This clears
      * the whole canvas and starts to execute actions from
-     * the action stack by calling Wb.animateNext().
+     * the action stack by calling XB.animateNext().
      * Will reset playback clock as well.
      */
     animate: function() {
       console.log("--- playing from beginning");
-      Wb.setPlaybackClock(0);
-      Wb.animIndex = 0;
-      Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
-      if (Wb.events.length > 0) {
-        Wb.animateNext(Wb.events[0].time);
+      XB.setPlaybackClock(0);
+      XB.animIndex = 0;
+      XB.context.clearRect(0,0,XB.canvas.width,XB.canvas.height);
+      if (XB.events.length > 0) {
+        XB.animateNext(XB.events[0].time);
       }
     },
 
@@ -259,22 +262,22 @@ window.Wb = {
      */
     animateNext: function(delay) {
       if (!(typeof delay === "undefined")) {
-        Wb.animateTimeout = setTimeout(Wb.animateNext);
+        XB.animateTimeout = setTimeout(XB.animateNext);
       } else {
-        if (Wb.animIndex === 0) {
-          Wb.animateTimeout = setTimeout(function(){
-            Wb.execute(Wb.events[0]);
-          }, Wb.events[0].time);
+        if (XB.animIndex === 0) {
+          XB.animateTimeout = setTimeout(function(){
+            XB.execute(XB.events[0]);
+          }, XB.events[0].time);
         } else {
-          Wb.execute(Wb.events[Wb.animIndex]);
+          XB.execute(XB.events[XB.animIndex]);
         }
-        Wb.animIndex++;
-        if (Wb.animIndex < Wb.events.length - 1) {
-          var diffTime = Wb.events[Wb.animIndex].time - Wb.events[Wb.animIndex - 1].time;
-          Wb.animateTimeout = setTimeout(Wb.animateNext, diffTime);
+        XB.animIndex++;
+        if (XB.animIndex < XB.events.length - 1) {
+          var diffTime = XB.events[XB.animIndex].time - XB.events[XB.animIndex - 1].time;
+          XB.animateTimeout = setTimeout(XB.animateNext, diffTime);
         } else {
           // we've reached the end, decrement back down
-          Wb.animIndex--;
+          XB.animIndex--;
         }
       }
     },
@@ -282,38 +285,38 @@ window.Wb = {
 
     /* called when someone clicks or moves the scrubber */
     jump: function(time){
-      Wb.redraw(time);
+      XB.redraw(time);
       // stop the old playbackClockTimeout and start a new one at our new time
-      clearTimeout(Wb.playbackClockTimeout);
-      Wb.setPlaybackClock(time);
-      if (Wb.isPlaying) {
-        Wb.animateNext(Wb.events[Wb.animIndex].time - time);
+      clearTimeout(XB.playbackClockTimeout);
+      XB.setPlaybackClock(time);
+      if (XB.isPlaying) {
+        XB.animateNext(XB.events[XB.animIndex].time - time);
       }
     },
 
     // stops playback and playback clock
     pause: function(){
-      Wb.isPlaying = false;
+      XB.isPlaying = false;
       // could be redundant if we already cleared timeout at end of playback, but
       // that's ok
-      clearTimeout(Wb.animateTimeout);
-      clearTimeout(Wb.playbackClockTimeout);
+      clearTimeout(XB.animateTimeout);
+      clearTimeout(XB.playbackClockTimeout);
       console.log("--- paused");
     },
 
     // start clock again and continue animating from the proper index.
     play: function(){
-      console.log("--- playing at ind: " + Wb.animIndex);
-      Wb.isPlaying = true;
-      if (Wb.playbackEnd()) {
-        Wb.animate();
+      console.log("--- playing at ind: " + XB.animIndex);
+      XB.isPlaying = true;
+      if (XB.playbackEnd()) {
+        XB.animate();
       } else {
-        Wb.setPlaybackClock();
+        XB.setPlaybackClock();
 
         // only animate if we haven't played all the events yet
-        if (!Wb.eventsEnd()){
-          console.log("Ind: " + Wb.animIndex + " End: " + Wb.events.length);
-          Wb.animateNext(Wb.events[Wb.animIndex].time - Wb.playbackClock);
+        if (!XB.eventsEnd()){
+          console.log("Ind: " + XB.animIndex + " End: " + XB.events.length);
+          XB.animateNext(XB.events[XB.animIndex].time - XB.playbackClock);
         }
       }
     },
@@ -322,24 +325,24 @@ window.Wb = {
     record: function(){
       // if in middle of playback and you record, go back to the end of the
       // recording, only supporting appending for records
-      if (!Wb.playbackEnd()) {
-        Wb.redraw();
+      if (!XB.playbackEnd()) {
+        XB.redraw();
       }
-      Wb.recording = true;
-      Wb.subtractTime += (new Date().getTime() - Wb.lastEndTime);
-      console.log("record, subtractTime: "+ Wb.subtractTime);
-      WbUi.setClockInterval();
+      XB.recording = true;
+      XB.subtractTime += (new Date().getTime() - XB.lastEndTime);
+      console.log("record, subtractTime: "+ XB.subtractTime);
+      XBUI.setClockInterval();
     },
 
     pauseRecord: function(){
-      console.log("Wb.pauseRecord ----------");
-      Wb.recording = false;
+      console.log("XB.pauseRecord ----------");
+      XB.recording = false;
       // keep track of this to make one smooth timeline even if we stop
       // and start recording sporadically.
-      Wb.lastEndTime = new Date().getTime();
+      XB.lastEndTime = new Date().getTime();
       // playback clock should be same as recording time when we stop recording
-      Wb.playbackClock = Wb.getRecordingTime();
-      clearInterval(Wb.recordClockInterval);
+      XB.playbackClock = XB.getRecordingTime();
+      clearInterval(XB.recordClockInterval);
     },
 
     /**
@@ -350,12 +353,12 @@ window.Wb = {
      */
     beginPencilDraw: function(x, y) {
       var e = new BeginPath(x, y);
-      Wb.execute(e);
+      XB.execute(e);
     },
 
     endPencilDraw: function(){
       var e = new ClosePath();
-      Wb.execute(e);
+      XB.execute(e);
     },
 
     /**
@@ -367,7 +370,7 @@ window.Wb = {
      */
     pencilDraw: function(x, y) {
         var e = new DrawPathToPoint(x, y);
-        Wb.execute(e);
+        XB.execute(e);
     },
 
     /**
@@ -378,7 +381,7 @@ window.Wb = {
      */
     beginErasing: function(x, y) {
         var e = new BeginPath(x, y);
-        Wb.execute(e);
+        XB.execute(e);
     },
 
     /**
@@ -393,7 +396,7 @@ window.Wb = {
      */
     erasePoint: function(x, y) {
         var e = new Erase(x, y);
-        Wb.execute(e);
+        XB.execute(e);
     },
 
     /**
@@ -404,29 +407,29 @@ window.Wb = {
     */
     redraw: function(time) {
       // Only redraw the entire board if we're going backwards from our current state
-      if (!(typeof time === "undefined" || time >= Wb.playbackClock)) {
-        Wb.animIndex = 0;
-        Wb.context.clearRect(0,0,Wb.canvas.width,Wb.canvas.height);
+      if (!(typeof time === "undefined" || time >= XB.playbackClock)) {
+        XB.animIndex = 0;
+        XB.context.clearRect(0,0,XB.canvas.width,XB.canvas.height);
       }
       // This code is verbose, but better for performance by reducing the number
       // of conditions checked in the loop
       if (typeof time === "undefined") {
-        for (Wb.animIndex; Wb.animIndex < Wb.events.length; Wb.animIndex++){
-          Wb.execute(Wb.events[Wb.animIndex]);
+        for (XB.animIndex; XB.animIndex < XB.events.length; XB.animIndex++){
+          XB.execute(XB.events[XB.animIndex]);
         }
       } else { //redraw only up to time
-        for (Wb.animIndex; Wb.animIndex < Wb.events.length; Wb.animIndex++){
-          if (Wb.events[Wb.animIndex].time >= time){
+        for (XB.animIndex; XB.animIndex < XB.events.length; XB.animIndex++){
+          if (XB.events[XB.animIndex].time >= time){
             break;
           } else {
-            Wb.execute(Wb.events[Wb.animIndex]);
+            XB.execute(XB.events[XB.animIndex]);
           }
         }
       }
 
       // If we got to the end, our animIndex is out of bounds now, decrement
-      if (Wb.animIndex == Wb.events.length) {
-        Wb.animIndex--;
+      if (XB.animIndex == XB.events.length) {
+        XB.animIndex--;
       }
     },
 
@@ -440,12 +443,12 @@ window.Wb = {
     setStrokeStyle: function(color) {
       console.log(color);
       var e = new StrokeStyle(color);
-      Wb.execute(e);
+      XB.execute(e);
       // Always push changes in stroke style if not playing
       // Push here, not in execute, because then redraw would
-      // be pushing StrokeStyle events into Wb.events.
-      if (!Wb.isPlaying) {
-        Wb.events.push(e);
+      // be pushing StrokeStyle events into XB.events.
+      if (!XB.isPlaying) {
+        XB.events.push(e);
       }
     },
 
@@ -456,8 +459,8 @@ window.Wb = {
      * recording is on first before anything gets executed.
      */
     canvasFunction: function(function_name, x, y){
-      if (Wb.recording) {
-        executeFunctionByName(function_name, Wb, x, y);
+      if (XB.recording) {
+        executeFunctionByName(function_name, XB, x, y);
       }
     },
 
@@ -465,11 +468,11 @@ window.Wb = {
     // Also stores meta-data, time
     save: function(){
       var data = {
-        'recordingTime': Wb.getRecordingTime(),
-        'subtractTime': Wb.subtractTime,
-        'lastEndTime' : Wb.lastEndTime,
-        'strokeColor' : Wb.context.strokeStyle,
-        'events': Wb.events
+        'recordingTime': XB.getRecordingTime(),
+        'subtractTime': XB.subtractTime,
+        'lastEndTime' : XB.lastEndTime,
+        'strokeColor' : XB.context.strokeStyle,
+        'events': XB.events
       };
       console.log("json --: " + JSON.stringify(data).length);
       console.log("cjson--: " + CJSON.stringify(data).length);
@@ -480,7 +483,7 @@ window.Wb = {
 
     // Restores the state of the canvas from saved compressed data
     restore: function(uniqueID){
-      //Wb.events = CJSON.parse();
+      //XB.events = CJSON.parse();
       // set max slider time
       // sync endtime/subtractTime
       var storedData;
@@ -490,14 +493,15 @@ window.Wb = {
       }
       storedData = lzw_encode(storedData);
       var data = CJSON.parse(lzw_decode(storedData));
-      WbUi.setMaxTime(data["recordingTime"]);
-      Wb.recordingTime = data["recordingTime"];
-      Wb.subtractTime = data["subtractTime"];
-      Wb.lastEndTime = data["lastEndTime"];
+      XBUI.setMaxTime(data["recordingTime"]);
+      XB.recordingTime = data["recordingTime"];
+      XB.subtractTime = data["subtractTime"];
+      XB.lastEndTime = data["lastEndTime"];
       $.fn.colorPicker.changeColor(data["strokeColor"]);
-      Wb.events = data["events"];
+      XB.events = data["events"];
     },
 
+    /* Generates an 11 character unique ID for this video */
     genUniqueID: function() {
       var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
       var len = 11;
@@ -516,22 +520,22 @@ window.Wb = {
     setPlaybackClock: function(time){
       if (typeof time === "undefined") {
         // if no explicit time passed in, increment the current playbackClock
-        Wb.playbackClock += Wb.sampleRate;
+        XB.playbackClock += XB.sampleRate;
       } else {
-        Wb.playbackClock = time;
+        XB.playbackClock = time;
       }
 
-      WbUi.setClock(Wb.playbackClock);
+      XBUI.setClock(XB.playbackClock);
 
       // set timeout if we're in play mode
-      if (Wb.isPlaying) {
+      if (XB.isPlaying) {
         // to make sure we stop at the end of playback
-        if (Wb.playbackClock < Wb.getRecordingTime()) {
-          Wb.playbackClockTimeout = setTimeout(Wb.setPlaybackClock, Wb.sampleRate, Wb.playbackClock + Wb.sampleRate);
+        if (XB.playbackClock < XB.getRecordingTime()) {
+          XB.playbackClockTimeout = setTimeout(XB.setPlaybackClock, XB.sampleRate, XB.playbackClock + XB.sampleRate);
         } else {
-          Wb.isPlaying = false;
-          Wb.playbackClock = Wb.getRecordingTime();
-          WbUi.playPauseToggle();
+          XB.isPlaying = false;
+          XB.playbackClock = XB.getRecordingTime();
+          XBUI.playPauseToggle();
         }
       }
 
@@ -539,20 +543,20 @@ window.Wb = {
 
     /* Gets the time elapsed in recording mode*/
     getRecordingTime: function(){
-      if (Wb.recording) {
-        Wb.recordingTime = new Date().getTime() - Wb.subtractTime;
+      if (XB.recording) {
+        XB.recordingTime = new Date().getTime() - XB.subtractTime;
       }
-      return Wb.recordingTime;
+      return XB.recordingTime;
     },
 
     // check if playback is at max time
     playbackEnd: function(){
-      return Wb.playbackClock == Wb.getRecordingTime();
+      return XB.playbackClock == XB.getRecordingTime();
     },
 
     // check if all events have been played in playback
     eventsEnd: function() {
-      return Wb.animIndex == (Wb.events.length - 1);
+      return XB.animIndex == (XB.events.length - 1);
     },
 
     };
