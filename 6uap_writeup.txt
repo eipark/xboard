@@ -1,4 +1,4 @@
-- forked off original project
+ forked off original project
 - proper javascript object oriented design, object literal notation, proper namespacing, separation
 - describe animation
     - difficulties in scrubbing because time does not hold state of board, it needs to be recreated, so jumping aaround means popping/adding drawing
@@ -104,3 +104,23 @@ http://laktek.com/2008/10/27/really-simple-color-picker-in-jquery/
 ====================
 
 draw for one minute, circuit problem, some text, ~800 events. ~10kb.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------------------------------
+
+TODO
+
+- group UI elements, things that can be clicked/cant
+- clean up XBUI

@@ -110,6 +110,12 @@ function Erase(x, y) {
   this.time = XB.getRecordingTime();
 }
 
+/*Clear event */
+function Clear() {
+  this.type = "l";
+  this.time = XB.getRecordingTime();
+}
+
 /* Stroke style event */
 function StrokeStyle(color) {
   this.type = "s";
@@ -123,8 +129,6 @@ function StrokeStyle(color) {
   }
 }
 /* === END Event objects === */
-
-
 
 /**
  * ====================
@@ -215,7 +219,9 @@ window.XB = {
                                xbevent.coord[1],
                                xbevent.width,
                                xbevent.height);
-        }
+      } else if (type === "l") {
+        XB.context.clearRect(0,0,XB.canvas.width,XB.canvas.height);
+      }
 
     },
 
@@ -344,6 +350,8 @@ window.XB = {
       clearInterval(XB.recordClockInterval);
     },
 
+    /** Canvas/Recording Functions **/
+
     /**
      * Begins a drawing path.
      *
@@ -397,6 +405,13 @@ window.XB = {
         var e = new Erase(x, y);
         XB.execute(e);
     },
+
+    clear: function(){
+      var e = new Clear();
+      XB.execute(e);
+    },
+
+    /** END Canvas/Recording Functions **/
 
     /**
      * This function redraws the entire canvas

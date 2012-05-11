@@ -139,6 +139,7 @@ window.XBUI = {
     XBUI.getElement('button_animate').mousedown(XB.animate);
     XBUI.getElement('recorder').mouseup(XBUI.recordToggle);
     XBUI.getElement('play_pause').mouseup(XBUI.playPauseToggle);
+    $("#button_clear").mouseup(XBUI.clear);
 
 
     $("#xboard-container #slider").slider({
@@ -352,6 +353,10 @@ window.XBUI = {
     XBUI.canvasElement.unbind("mousemove");
     XBUI.canvasElement.unbind("mouseup");
     XBUI.canvasElement.unbind("mouseout");
+  },
+
+  clear: function() {
+    XB.canvasFunction("clear");
   },
 
   /* sets the clock time  */

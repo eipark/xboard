@@ -92,6 +92,9 @@ input#button_pencil{
 input#button_eraser{
   background: url("img/eraser.png") no-repeat;
 }
+input#button_clear{
+  background: url("img/eraser.png") no-repeat;
+}
 
 /* Bottom Row
 -------------------------------*/
