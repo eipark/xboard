@@ -1,31 +1,9 @@
 $(document).ready(function(){
   XBUI.init($("canvas"));
 
-  // Restore from an embed code if one is passed in
-  var embed_code = url_query('embed');
-  if (embed_code) {
-    XB.restore(embed_code);
-  }
-
-  // If in an iFrame embed, remove all recording elements.
-  if (window != window.top) {
-    $(".recording_elt").remove();
-  }
 
 });
 
-function url_query(query) {
-  query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var expr = "[\\?&]"+query+"=([^&#]*)";
-  var regex = new RegExp( expr );
-  var results = regex.exec( window.location.href );
-  if( results !== null ) {
-    return results[1];
-    return decodeURIComponent(results[1].replace(/\+/g, " "));
-  } else {
-    return false;
-  }
-}
 
 (function() {
 
@@ -38,6 +16,19 @@ function readableTime(ms) {
   seconds = seconds >= 10 ? seconds : "0" + seconds;
   minutes = minutes >= 10 ? minutes : "" + minutes;
   return minutes + ":" + seconds;
+}
+
+function url_query(query) {
+  query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+  var expr = "[\\?&]"+query+"=([^&#]*)";
+  var regex = new RegExp( expr );
+  var results = regex.exec( window.location.href );
+  if( results !== null ) {
+    return results[1];
+    return decodeURIComponent(results[1].replace(/\+/g, " "));
+  } else {
+    return false;
+  }
 }
 
 window.XBUI = {
@@ -96,6 +87,17 @@ window.XBUI = {
       }
     }
     this.addListeners();
+
+    // Restore from an embed code if one is passed in
+    var embed_code = url_query('embed');
+    if (embed_code) {
+      XB.restore(embed_code);
+    }
+
+    // If in an iFrame embed, remove all recording elements.
+    if (window != window.top) {
+      $(".recording_elt").remove();
+    }
   },
 
   /**
@@ -167,6 +169,7 @@ window.XBUI = {
       }
     });
 
+    // Color Picker
     $("#color_picker").colorPicker({pickerDefault: "000000"});
     $(".colorPicker-swatch").click(function(){
       XB.setStrokeStyle($(this).css("background-color"));
