@@ -1,19 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>xBoard</title>
-    <link rel="stylesheet" type="text/css" href="css/reset.css" />
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.19.custom.css" />
-    <link rel="stylesheet" type="text/css" href="css/colorpicker.css" />
-    <script src="js/libs/jquery-1.7.2.min.js" type="application/javascript"></script>
-    <script src="js/libs/jquery-ui-1.8.19.custom.min.js" type="application/javascript"></script>
-    <script src="js/xboard.js" type="application/javascript"></script>
-    <script src="js/xboardui.js" type="application/javascript"></script>
-    <script src="js/libs/colorpicker.js" type="text/javascript"></script>
-    <script src="js/libs/cjson.js" type="text/javascript"></script>
-</head>
+  <head>
+    <title>ernie park</title>
+    <style type="text/css" media="screen">
+      body {font-family: 'helvetica'; margin-left: 100px; margin-top: 50px; width: 1000px; }
+    </style>
+
+  </head>
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -27,44 +20,44 @@
   })();
 
 </script>
-<body>
-<div id="xboard-container">
-    <div id="top-row" class="clearfix">
-      <div id="drawsection">
-        <canvas id="canvas">
-        </canvas>
-        <div id="loader"></div>
-      </div><!-- /drawsection -->
-      <div class="recording_elt" id="tools">
-          <input id="button_pencil" class="drawing_tool" title="Pencil" type="button"></input>
-          <input id="button_eraser" class="drawing_tool" title="Eraser" type="button"></input>
-          <input id="button_clear" title="Clear Canvas" type="button"></input>
-          <div title="Pick a Color"><input id="color_picker" type="text" value="#000000"/></div>
-      </div> <!-- /tools -->
-    </div>
-    <div id="bottom-row">
-      <div id="slider_container">
-        <div class="clearfix" id="slider">
-        </div>
-      </div>
-      <div id="controls" class="clearfix">
-        <button id="play_pause" class="">
-        </button>
-        <div id="elapsed_timer" class="timing">0:00</div>
-        <div id="time_separator" class="timing">/</div>
-        <div id="total_timer" class="timing">0:00</div>
-        <button id="recorder" class="recording_elt" title="Record"></button>
-      </div>
-    </div>
-  </div>
-</div> <!-- /container -->
-<br /><br />
-<div style="padding-left: 15px">
-<font size="5">xBoard: a Recordable HTML5 Canvas Based Virtual Whiteboard.</font><br />
-Click the red button and click the pencil to start recording and drawing.<br />
+  <body>
+
+    <h1>Ernie Park</h1>
+    ernie.park -at- gmail dot com | <a href="Ernest_Park_Resume.pdf">resume</a><br /><br /><br />
+
+
+    i am a senior at MIT studying computer science.<br /><br />
+    the links below highlight my different interests and activities. <br /><br />
+
+    <a href="http://www.krapydna.com">krapyDNA</a> - 
+    <a href="http://github.com/eipark">github</a> - 
+    <a href="http://twitter.com/eipark">twitter</a> - 
+    <a href="http://linkedin.com/in/ernestipark">linkedin</a> - 
+    <a href="http://mithockey.com">mit hockey</a> - 
+    <a href="http://cornerstoneboston.org">church</a> - 
+    <a href="http://web.mit.edu">mit</a> - 
+    <a href="http://mitlogs.com">mit logs</a> - 
+    <a href="http://ycombinator.com">y combinator</a>
+  <br /><br />
 <br />
-<a href="http://github.com/eipark/xboard">Project on GitHub</a>
-<br /><br />
-Visit <a href="embed.html">embed.html</a> to see how xBoard looks when embedded on a page.
-</body>
+  <br /><br />
+<hr>
+<br />
+  <h2>some past projects</h2>
+  <h3><a href="http://mitx.mit.edu">MITx</a>(2011-present)</h3>
+  I am one of the developers for MIT's new educational platform, MITx. For my senior project (6.UAP), I developed <a href="http://github.com/eipark/xboard">xBoard</a>.<br /><br />
+
+  <h3><a href="http://krapydna.com">krapyDNA</a> (2011-present)</h3>
+  krapyDNA is my brother's brand new Christian clothing brand. While he originally asked me to help him build his website, it was fun working with him as I got to help him make decisions on branding, marketing, designs, etc. As for the site, it isn't much (I am clearly not much of a designer) but I built it on the Shopify platform and got familiar with their framework. I mostly skinned parts that were extraneous and added design tweaks here and there. An interesting part of this project was finding a smooth workflow. I think this project was good practice at learning the importance of a good deployment strategy. A blog post will go on krapyDNA soon about my work flow.<br /><br />
+
+  <h3><a href="http://ntwrk.me">ntwrk.me</a> (January 2011) </h3>
+  I worked on ntwrk.me for the 6.470 Web Programming Competition with a friend of mine during Junior year. The general concept was that people have different profiles in different settings and that we only want to show certain parts of ourselves to certain people. In the context of the "jobs" theme for 6.470 that year, we angled it from the prospective of applying for different jobs. If I am applying for a consulting firm vs a software company, I'd probably have a different resume or profile. So my ntwrk.me URL might be ntwrk.me/ernie/bain that I give to the consulting company, versus ntwrk.me/ernie/google for the small software company. The user can design their page using a custom WYSYWIG editor that we designed. To be frank, we never solidified exactly what we wanted the product to be, but in the end decided to just build something cool for the competition. It was a mix of PHP/jQuery/MySQL/HTML/CSS. It's not the prettiest site, but for the limited time we had over IAP whilst doing other things, we were pretty happy with what we made, and especially the editor. We ended up getting 3rd place in the competition.<br /><br />
+
+  <h3>OTW: One Touch Wonder (January 2010) </h3>
+  OTW was a project my friend and I worked on (same one as ntwrk.me) for the 6.190 Web Based Speech Recognition Competition over IAP. The task was to create any application using the speech capabilities of the <a href="http://wami.csail.mit.edu/">WAMI</a> toolkit developed at MIT's CSAIL. What we came up with was not one specific application, but more of a developer friendly framework around WAMI's speech capabilities. OTW was a bookmarklet, that when clicked, popped up a window that accepted speech input. We designed it so it could be fully extensible. Any developer with the APIs can plug in their own application into OTW. Some examples we gave were MBTA schedules. For instance, you could click OTW on your bookmarks bar, say "next 5 trains to Kendall station" and then the times would pop up in the window. We also showed a weather app as another example. Unfortunately, the code is no longer online, but fortunately, we won first place! <br /><br />
+
+  <h3><a href="http://optionize.com">optionize.com</a> (Summer 2009)</h3>
+  Optionize was a project I jumped in on with two of my friends who had come up with the idea. It is a simple polling service... that doesn't suck. You can clearly see we had an actual designer on the team as opposed to my exploits with CSS. Nevertheless, I started working on Optionize the summer after the semester in which I wrote my first line of code ever. It was a fantastic experience to work on something cool and learn a lot more about the web stack. I had been building websites since I was in 4th grade, but I had never actually programmed before (HTML doesnt count). Optionize also gave me a great insight into the kind of decisions that go behind designing a product. My insights into product design and usability exploded from nothing to... more than nothing. It was a great chance for me to code while looking at the business/customer end of things.
+
+  </body>
 </html>
