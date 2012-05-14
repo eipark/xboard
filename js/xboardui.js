@@ -1,13 +1,19 @@
+/* xBoard - A Recordable HTML5 Canvas Based Virtual Whiteboard 
+ *
+ * by Ernie Park, May 2012
+ * Under MIT License
+ * http://github.com/eipark/xboard
+ *
+ */
+
 $(document).ready(function(){
   XBUI.init($("canvas"));
-
-
 });
 
 
 (function() {
 
-/* converts ms to MM:SS:ss format */
+/* Converts ms to MM:SS:ss format */
 function readableTime(ms) {
   var x = ms / 1000;
   var seconds = Math.floor(x % 60);
@@ -18,6 +24,7 @@ function readableTime(ms) {
   return minutes + ":" + seconds;
 }
 
+/* Returns value of parameter string "query" */
 function url_query(query) {
   query = query.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
   var expr = "[\\?&]"+query+"=([^&#]*)";
@@ -40,7 +47,7 @@ window.XBUI = {
    * The default ids and classes for the element
    * configurations are the index names used in this
    * array.
-   * 
+   *
    * If names or classes have different names, they
    * should be defined in the script initialization,
    * that is XBUI.init() function.
@@ -94,7 +101,7 @@ window.XBUI = {
       XB.restore(embed_code);
     }
 
-    // If in an iFrame embed, remove all recording elements.
+    // If in an iframe embed, remove all recording elements.
     if (window != window.top) {
       $(".recording_elt").remove();
     }
@@ -144,6 +151,9 @@ window.XBUI = {
     $("#button_clear").mouseup(XBUI.clear);
 
 
+    /* XBUI.wasPlaying needed since we always want to be paused before
+       jumping around. If wasPlaying, we call XB.play() after the slider
+       stops */
     $("#xboard-container #slider").slider({
       start: function(event, ui) {
         if (XB.isPlaying) {
@@ -177,8 +187,8 @@ window.XBUI = {
 
   },
 
-  // toggles a class and calls a function for both cases when the class
-  // is there and not there. Small wrapper, for record and play button.
+  /* Toggles a class and calls a function for both cases when the class
+     is there and not there. Small wrapper, for record and play button. */
   toggler: function(elt, toggle_class, truth_func, false_func) {
     if (elt.hasClass(toggle_class)){
       elt.removeClass(toggle_class);
@@ -197,8 +207,8 @@ window.XBUI = {
     XBUI.toggler($("#recorder"), "is_recording", XBUI.pauseRecord, XBUI.record);
   },
 
-  // Changes recording button and disables buttons not appropriate
-  // for recording state.
+  /* Changes recording button and disables buttons not appropriate
+     for recording state. */
   record: function(elt) {
     $("#slider").slider("disable");
     $("#drawsection").addClass("is_recording");
@@ -216,13 +226,11 @@ window.XBUI = {
   },
 
   play: function() {
-    console.log("---XBUI.play()");
     $("#recorder").attr("disabled", true);
     XB.play();
   },
 
   pause: function() {
-    console.log("---XBUI.pause()");
     $("#recorder").attr("disabled", false);
     XB.pause();
   },
@@ -350,7 +358,7 @@ window.XBUI = {
    * Ends erasing which means that mouse moving won't
    * be registered as erasing action anymore. This should be
    * executed on mouseup after user has started erasing.
-   * 
+   *
    * @param event The event that has been executed to perform
    * this action
    */
@@ -364,7 +372,7 @@ window.XBUI = {
     XB.canvasFunction("clear");
   },
 
-  /* sets the clock time  */
+  /* Updates the total recording time and playback time clocks in the UI */
   setClock: function(time){
     // if time is passed in, we use it, otherwise we just set it to
     // the current recording time because it means we are recording
@@ -394,6 +402,7 @@ window.XBUI = {
     XB.recordClockInterval = setTimeout(XBUI.setClockInterval, XB.sampleRate);
   },
 
+  /* Set the max time for the slider and UI */
   setMaxTime: function(time){
     $("#xboard-container #slider").slider("option", "max", time);
     $("#total_timer").html(readableTime(time));
