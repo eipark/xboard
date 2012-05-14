@@ -160,6 +160,7 @@ window.XB = {
     animateTimeout: null,
     drawColor: '#000000',
     uniqueID: null,
+    lineWidth: 3,
 
     /**
      * Initializes the script by setting the default
@@ -177,7 +178,7 @@ window.XB = {
       this.context = this.canvas.getContext('2d');
 
       //initial values for the drawing context
-      this.context.lineWidth = 5;
+      this.context.lineWidth = XB.lineWidth;
       this.context.lineCap = "square";
 
       // Initialize the selected color and add it as the first event
