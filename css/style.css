@@ -27,6 +27,7 @@ div#drawsection {
 
 div#drawsection.is_recording{
   border: 1px solid red;
+  box-shadow: inset 0px 0px 7px red;
   border-bottom: 0;
 }
 
