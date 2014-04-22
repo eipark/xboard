@@ -90,7 +90,6 @@
   globals.require.list = list;
   globals.require.brunch = true;
 })();
-require.register("xboard", function(exports, require, module) {
 /* xBoard - A Recordable HTML5 Canvas Based Virtual Whiteboard 
  *
  * by Ernie Park, May 2012
@@ -100,7 +99,6 @@ require.register("xboard", function(exports, require, module) {
  */
 
 (function() {
-
 /**
  * =============
  *    Helpers
@@ -726,10 +724,7 @@ window.XB = {
     };
 })();
 
-});
-
-;require.register("xboardui", function(exports, require, module) {
-/* xBoard - A Recordable HTML5 Canvas Based Virtual Whiteboard 
+;/* xBoard - A Recordable HTML5 Canvas Based Virtual Whiteboard 
  *
  * by Ernie Park, May 2012
  * Under MIT License
@@ -814,7 +809,6 @@ window.XBUI = {
    * defined.
    */
   init: function(canvasElement, elemconf) {
-    debugger
     this.canvasElement = canvasElement;
     $("#xboard-container #slider").slider({});
     XB.init(canvasElement.attr("id"));
@@ -1142,8 +1136,6 @@ window.XBUI = {
 
 };
 })();
-
-});
 
 ;
 //# sourceMappingURL=app.js.map

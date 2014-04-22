@@ -83,7 +83,6 @@ window.XBUI = {
    * defined.
    */
   init: function(canvasElement, elemconf) {
-    debugger
     this.canvasElement = canvasElement;
     $("#xboard-container #slider").slider({});
     XB.init(canvasElement.attr("id"));
