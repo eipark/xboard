@@ -1,6 +1,8 @@
 xBoard: A Recordable HTML5 Canvas Based Virtual Whiteboard
 ---------------
 
+This is Jungsoo's fork.
+
 [Editor Demo] | [Embed Demo]
 
 ![xBoard Screenshot](https://github.com/eipark/xboard/raw/3bba4ce85ed6f8d731d73f1a252dc0798ec1795c/xboard_recording.png)
